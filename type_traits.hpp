@@ -1,7 +1,8 @@
-#ifndef _WT_TYPE_TRAITS_H_
-#define _WT_TYPE_TRAITS_H_
+#ifndef _STL_WT_TYPE_TRAITS_HPP_
+#define _STL_WT_TYPE_TRAITS_HPP_
 
 namespace wt{
+
 template<typename T,T v>
 struct integral_constant{
 	static constexpr T value = v;
@@ -256,7 +257,7 @@ template <> struct is_integral<unsigned long> : true_type{};
 template <> struct is_integral<long long> : true_type{};
 template <> struct is_integral<unsigned long long> : true_type{};
 
-
 } // namespace wt
+
 
 #endif
