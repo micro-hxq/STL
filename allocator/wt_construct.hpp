@@ -4,6 +4,12 @@
 
 #include <new>
 
+/**
+ *  depend on:
+ *            "type_traits.hpp"
+ *            "../iterator/wt_iterator_base.hpp"
+ */
+
 namespace wt{
 
 template <typename T1,typename T2>
@@ -43,13 +49,13 @@ void destroy_aux(ForwardIterator _first,ForwardIterator _last,wt::false_type)
 template <typename ForwardIterator,typename T>
 inline void destroy(ForwardIterator _first,ForwardIterator _last,T*)
 {
-	destroy_aux(_first,_last,wt::is_trivially_destructible<T>());
+	destroy_aux(_first,_last,is_trivially_destructible<T>());
 }
 
 template <typename ForwardIterator>
 inline void destroy(ForwardIterator _first,ForwardIterator _last)
 {
-	destroy(_first,_last,&(*_first));
+	destroy(_first,_last,_VALUE_TYPE(_first));
 }
 
 inline void destroy(char*, char*) {}

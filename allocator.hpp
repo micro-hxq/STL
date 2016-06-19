@@ -7,5 +7,6 @@
 #include "utility.hpp"
 #include "allocator/wt_allocator.hpp"
 #include "allocator/wt_allocator_traits.hpp"
+#include "allocator/wt_construct.hpp"
 
 #endif
