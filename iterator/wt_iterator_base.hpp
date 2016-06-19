@@ -11,50 +11,6 @@ struct forward_iterator_tag : public input_iterator_tag {};
 struct bidirectional_iterator_tag : public forward_iterator_tag {};
 struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
-// template <typename Tp,typename Distance>
-// struct input_iterator {
-//     typedef input_iterator_tag  iterator_category;
-//     typedef Tp                  value_type;
-//     typedef Distance            difference_type;
-//     typedef Tp*                 pointer;
-//     typedef Tp&                 reference;
-// };
-
-// struct output_iterator {
-//     typedef output_iterator_tag iterator_category;
-//     typedef void                value_type;
-//     typedef void                difference_type;
-//     typedef void                pointer;
-//     typedef void                reference;
-// };
-
-// template <typename Tp,typename Distance>
-// struct forward_iterator {
-//     typedef forward_iterator_tag    iterator_category;
-//     typedef Tp                      value_type;
-//     typedef Distance                difference_type;
-//     typedef Tp*                     pointer;
-//     typedef Tp&                     reference;
-// };
-
-// template <typename Tp,typename Distance>
-// struct bidirectional_iterator{
-//     typedef bidirectional_iterator_tag  iterator_category;
-//     typedef Tp                          value_type;
-//     typedef Distance                    difference_type;
-//     typedef Tp*                         pointer;
-//     typedef Tp&                         reference;
-// };
-
-// template <typename Tp,typename Distance>
-// struct random_access_iterator{
-//     typedef random_access_iterator_tag  iterator_category;
-//     typedef Tp                          value_type;
-//     typedef Distance                    difference_type;
-//     typedef Tp*                         pointer;
-//     typedef Tp&                         reference;
-// };
-
 template <typename Category, typename T, typename Distance = std::ptrdiff_t,
             typename Pointer = T*, typename Reference = T&>
 struct iterator{
@@ -92,6 +48,33 @@ struct iterator_traits<const T*>{
     typedef const T*                    pointer;
     typedef const T&                    reference;
 };
+
+template <typename Iterator>
+typename iterator_traits<Iterator>::iterator_category
+_iterator_category(const Iterator& )
+{
+    using _IteratorCategory = typename iterator_traits<Iterator>::iterator_category;
+    return _IteratorCategory();
+}
+
+template <typename Iterator>
+typename iterator_traits<Iterator>::difference_type*
+_difference_type(const Iterator& )
+{
+    return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
+}
+
+// note: the return type is pointer, not value_type of Iterator.
+template <typename Iterator>
+typename iterator_traits<Iterator>::value_type*
+_value_type(const Iterator& )
+{
+    return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
+}
+
+#define _ITERATOR_CATEGORY(iter)    _iterator_category(iter)
+#define _DIFFERENCE_TYPE(iter)      _difference_type(iter)
+#define _VALUE_TYPE(iter)           _value_type(iter)
 
 /**
  *  iterator operation
@@ -165,8 +148,7 @@ inline void _advance(RandomAccessIterator& _iter, Distance _n, random_access_ite
 template <typename InputIterator, typename Distance>
 inline void advance(InputIterator& _iter, Distance _n)
 {
-    using _IteratorCategory = typename iterator_traits<InputIterator>::iterator_category;
-    _advance(_iter, _n, _IteratorCategory());
+    _advance(_iter, _n, _ITERATOR_CATEGORY(_iter));
 }
 
 //////////
@@ -207,8 +189,7 @@ template <typename BidirectionalIterator>
 inline BidirectionalIterator prev(BidirectionalIterator _iter,
                         typename iterator_traits<BidirectionalIterator>::difference_type _n = 1)
 {
-    using _IteratorCategory = typename iterator_traits<BidirectionalIterator>::iterator_category;
-    return _prev(_iter,_n,_IteratorCategory());
+    return _prev(_iter,_n,_ITERATOR_CATEGORY(_iter));
 }
 
 } // namespace wt
