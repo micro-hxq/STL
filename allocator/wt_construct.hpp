@@ -2,12 +2,12 @@
 #ifndef _STL_WT_CONSTRUCT_HPP_
 #define _STL_WT_CONSTRUCT_HPP_
 
-#include <new>
-
 /**
  *  depend on:
  *            "type_traits.hpp"
- *            "../iterator/wt_iterator_base.hpp"
+ *            "utility/wt_utility.hpp"            
+ *            "/iterator/wt_iterator_base.hpp"
+ *            
  */
 
 namespace wt{

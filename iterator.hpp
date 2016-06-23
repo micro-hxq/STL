@@ -3,7 +3,6 @@
 
 #include <cstddef>
 
-#include "iterator/wt_relops.hpp"
 #include "iterator/wt_iterator_base.hpp"
 #include "iterator/wt_iterator.hpp"
 

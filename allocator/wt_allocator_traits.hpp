@@ -74,6 +74,23 @@ allocator_traits<Alloc>::max_size(Alloc& a) noexcept
     return a.max_size();
 }
 
-} // namespace wt
+template <typename T, typename Allocator>
+struct _Alloc_traits {
+    static constexpr bool isStatic = false;
+    typedef typename Allocator::template rebind<T>::other allocator_type;
+};
+
+template <typename T, typename Allocator>
+constexpr bool _Alloc_traits<T, Allocator>::isStatic;
+
+template <typename T, typename U>
+struct _Alloc_traits<T, allocator<U>> {
+    static constexpr bool isStatic = true;
+    typedef allocator<U> allocator_type;
+};
+template <typename T, typename U>
+constexpr bool _Alloc_traits<T, allocator<U>>::isStatic;
+
+ } // namespace wt
 
 #endif

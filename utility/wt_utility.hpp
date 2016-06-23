@@ -1,6 +1,11 @@
 #ifndef _STL_WT_UTILITY_HPP_
 #define _STL_WT_UTILITY_HPP_
 
+/**
+ *  depend on:
+ *            "type_traits.hpp"
+ */
+
 namespace wt{
 
 template <typename T>

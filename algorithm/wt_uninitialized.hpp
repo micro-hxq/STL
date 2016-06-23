@@ -29,13 +29,13 @@ _uninitialized_copy_aux(InputIterator _first, InputIterator _last,
                         ForwardIterator _result, false_type)
 {
     ForwardIterator _current = _result;
-    try{
+    try {
         for(; _first != _last; ++_first, ++_current)
         {
             construct(&*_current, *_first);
         }
     }
-    catch(...){
+    catch(...) {
         destroy(_result, _current);
         throw;
     }
@@ -194,7 +194,7 @@ template <typename ForwardIterator, typename Size, typename T>
 inline ForwardIterator
 uninitialized_fill_n(ForwardIterator _first, Size _count, const T& _value)
 {
-    return _uninitialized_fill(_first, _count, _value, _VALUE_TYPE(_first));
+    return _uninitialized_fill_n(_first, _count, _value, _VALUE_TYPE(_first));
 }
 
 } // namespace wt
