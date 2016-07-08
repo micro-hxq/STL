@@ -50,7 +50,7 @@ public:
     }
     _Vec_const_iterator operator++(int) noexcept
     {
-        return _Vec_const_iterator(m_ptr_ ++);
+        return _Vec_const_iterator(m_ptr_++);
     }
     _Vec_const_iterator& operator--() noexcept
     {
@@ -168,7 +168,7 @@ public:
     }
     _Vec_iterator operator++(int) noexcept
     {
-        return _Vec_iterator(m_ptr_ ++);
+        return _Vec_iterator(m_ptr_++);
     }
     _Vec_iterator& operator--() noexcept
     {
@@ -285,35 +285,35 @@ protected:
 /**
  *  specialization for no state allocator
  */
-// template <typename T, typename Allocator>
-//  class _Vector_alloc_base<T, Allocator, true> {
-// public:
-//     typedef typename allocator_traits<Allocator>::allocator_type
-//             allocator_type;
+template <typename T, typename Allocator>
+ class _Vector_alloc_base<T, Allocator, true> {
+public:
+    typedef typename allocator_traits<Allocator>::allocator_type
+            allocator_type;
 
-//     _Vector_alloc_base(const allocator_type& _a)
-//     : m_start_(nullptr), m_finish_(nullptr), m_end_of_storage_(nullptr) {}
+    _Vector_alloc_base(const allocator_type& _a)
+    : m_start_(nullptr), m_finish_(nullptr), m_end_of_storage_(nullptr) {}
 
-//     allocator_type get_allocator() const
-//     {
-//         return allocator_type();
-//     }
-// protected:
-//     typedef allocator_traits<Allocator> _Alloc;
-//     T* _allocate(size_t _n)
-//     {
-//         return _Alloc::allocate(allocator_type(), _n);
-//     }
+    allocator_type get_allocator() const
+    {
+        return allocator_type();
+    }
+protected:
+    typedef typename _Alloc_traits<T, Allocator>::_Alloc_type _Alloc_type;
+    T* _allocate(size_t _n)
+    {
+        return _Alloc_type::allocate(_n);
+    }
 
-//     void _deallocate(T* _p, size_t _n)
-//     {
-//         _Alloc::deallocate(allocator_type(), _p, _n);
-//     }
-// protected:
-//     T*  m_start_;
-//     T*  m_finish_;
-//     T*  m_end_of_storage_;
-//  };
+    void _deallocate(T* _p, size_t _n)
+    {
+        _Alloc_type::deallocate(_p, _n);
+    }
+protected:
+    T*  m_start_;
+    T*  m_finish_;
+    T*  m_end_of_storage_;
+ };
 
 template <typename T, typename Allocator>
 class Vector_base : public _Vector_alloc_base<T, Allocator, 

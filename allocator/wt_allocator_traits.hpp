@@ -86,7 +86,8 @@ constexpr bool _Alloc_traits<T, Allocator>::isStatic;
 template <typename T, typename U>
 struct _Alloc_traits<T, allocator<U>> {
     static constexpr bool isStatic = true;
-    typedef allocator<U> allocator_type;
+    typedef allocator<U>        allocator_type;
+    typedef simple_alloc<T>     _Alloc_type;
 };
 template <typename T, typename U>
 constexpr bool _Alloc_traits<T, allocator<U>>::isStatic;

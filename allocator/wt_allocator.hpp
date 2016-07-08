@@ -41,7 +41,7 @@ public:
 
     pointer allocate(size_type n, const void* hint = 0)
     {
-        return static_cast<T*>(::operator new(n * sizeof(T)));
+        return static_cast<value_type*>(::operator new(n * sizeof(value_type)));
     }
 
     void deallocate(pointer p, size_type)
@@ -93,6 +93,27 @@ bool operator!=(const allocator<T1>& lhs, const allocator<T2>& rhs) noexcept
     return false;
 }
 
+template <typename T>
+class simple_alloc {
+public:
+    typedef T               value_type;
+    typedef T*              pointer;
+    typedef const T*        const_pointer;
+    typedef T&              reference;
+    typedef const T&        const_reference;
+    typedef std::size_t     size_type;
+    typedef std::ptrdiff_t  difference_type;
+
+    static pointer allocate(size_type _n)
+    {
+        return static_cast<value_type*>(::operator new(_n * sizeof(value_type)));
+    }
+
+    static void deallocate(pointer _p, size_type _n)
+    {
+        ::operator delete(_p);
+    }
+};
 
 
 } // namespace wt

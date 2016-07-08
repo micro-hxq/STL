@@ -20,7 +20,11 @@ constexpr T&& forward(wt::remove_reference_t<T>&& t) noexcept
     return static_cast<T&&>(t);
 }
 
-
+template <typename T>
+constexpr wt::remove_reference_t<T>&& move(T&& t) noexcept
+{
+    return static_cast<wt::remove_reference_t<T>&&>(t);
+}
 
 
 
