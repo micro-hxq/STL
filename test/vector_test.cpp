@@ -68,7 +68,6 @@ TEST_CASE("vector","[vector]") {
         REQUIRE(iter < v.end());
         REQUIRE(((iter <= iter) && (iter >= iter) && (iter == iter)));
         print(v.crbegin(), v.crend(), "reverse iterator");
-
     }
 
     SECTION("assign") {
@@ -114,7 +113,7 @@ TEST_CASE("vector","[vector]") {
         REQUIRE(fv.at(2) == 0.3f);
         REQUIRE(fv[3] == 0.4f);
         REQUIRE(fv.back() == 0.5f);
-        fv.at(10) = 0.1f;
+        // fv.at(10) = 0.1f;
     }
 
     SECTION("modified operation") {
