@@ -49,7 +49,7 @@ public:
         node_ = node_->next_;
         return *this;
     }
-    _List_const_iterator& operator++(int) noexcept
+    _List_const_iterator operator++(int) noexcept
     {
         _List_const_iterator temp = *this;
         node_ = node_->next_;
@@ -60,7 +60,7 @@ public:
         node_ = node_->prev_;
         return *this;
     }
-    _List_const_iterator& operator--(int) noexcept
+    _List_const_iterator operator--(int) noexcept
     {
         _List_const_iterator temp = *this;
         node_ = node_->prev_;
@@ -110,7 +110,7 @@ public:
         node_ = node_->next_;
         return *this;
     }
-    _List_iterator& operator++(int) noexcept
+    _List_iterator operator++(int) noexcept
     {
         _List_iterator temp = *this;
         node_ = node_->next_;
@@ -121,7 +121,7 @@ public:
         node_ = node_->prev_;
         return *this;
     }
-    _List_iterator& operator--(int) noexcept
+    _List_iterator operator--(int) noexcept
     {
         _List_iterator temp = *this;
         node_ = node_->prev_;
