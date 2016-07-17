@@ -17,7 +17,7 @@
 namespace wt{
 
 template <typename T>
-class _Vec_const_iterator : public iterator<random_access_iterator_tag, T> {
+class _Vec_const_iterator : public iterator<wt::random_access_iterator_tag, T> {
 public:
     typedef random_access_iterator_tag      iterator_category;
     typedef T                               value_type;
