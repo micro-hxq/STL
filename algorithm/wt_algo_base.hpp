@@ -408,12 +408,12 @@ template <typename InputIterator1, typename InputIterator2,
           typename BinaryPredicate>
 bool _equal_dispatch(InputIterator1 _first1, InputIterator1 _last1,
                      InputIterator2 _first2, InputIterator2 _last2,
-                     BinaryPredicate _pred, wt::input_iterator_tag,
+                     BinaryPredicate pred, wt::input_iterator_tag,
                      wt::input_iterator_tag)
 {
     for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
     {
-        if(!_pred(*_first1, *_first2))
+        if(!pred(*_first1, *_first2))
             return false;
     }
     return (_first1 == _last1 && _first2 == _last2);
@@ -440,9 +440,9 @@ template <typename InputIterator1, typename InputIterator2,
           typename BinaryPredicate>
 inline bool equal(InputIterator1 _first1, InputIterator1 _last1,
                   InputIterator2 _first2, InputIterator2 _last2,
-                  BinaryPredicate _pred)
+                  BinaryPredicate pred)
 {
-    return _equal_dispatch(_first1, _last1, _first2, _last2, _pred,
+    return _equal_dispatch(_first1, _last1, _first2, _last2, pred,
                            _ITERATOR_CATEGORY(_first1),
                            _ITERATOR_CATEGORY(_first2));
 }
@@ -453,7 +453,7 @@ template <typename InputIterator1, typename InputIterator2>
 bool lexicographical_compare(InputIterator1 _first1, InputIterator1 _last1,
                              InputIterator2 _first2, InputIterator2 _last2)
 {
-    for(; _first1 != _last1; ++_first1, ++_first2)
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
     {
         if(*_first1 < *_first2)
             return true;
@@ -468,7 +468,7 @@ bool lexicographical_compare(InputIterator1 _first1, InputIterator1 _last1,
                              InputIterator2 _first2, InputIterator2 _last2,
                              BinaryPredicate pred)
 {
-    for(; _first1 != _last1; ++_first1, ++_first2)
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
     {
         if(pred(*_first1, *_first2))
             return true;

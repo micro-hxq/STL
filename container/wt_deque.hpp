@@ -567,11 +567,11 @@ public:
     {
         wt::uninitialized_copy(other.begin(), other.end(), m_start_);
     }
-    deque(deque&& other) noexcept : _Base(other.get_allocator())
+    deque(deque&& other) noexcept : _Base(other.get_allocator(), 0)
     {
         this->swap(other);
     }
-    deque(deque&& other, const allocator_type& _a) noexcept : _Base(_a)
+    deque(deque&& other, const allocator_type& _a) noexcept : _Base(_a, 0)
     {
         this->swap(other);
     }
@@ -590,7 +590,7 @@ public:
             }
             else
             {
-                iterator mid = 
+                const_iterator mid = 
                          other.begin() + static_cast<difference_type>(size());
                 wt::copy(other.begin(), mid, m_start_);
                 insert(m_finish_, mid, other.end());
@@ -629,11 +629,11 @@ public:
 
     reference operator[](size_type _pos)
     {
-        return (*this)[_pos];
+        return m_start_[_pos];
     }
     const_reference operator[](size_type _pos) const
     {
-        return (*this)[_pos];
+        return m_start_[_pos];
     }
 
     reference front()
