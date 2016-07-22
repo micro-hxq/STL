@@ -91,12 +91,6 @@ public:
     {
         return _String_const_iterator(_iter.m_ptr_ - _offset);
     }
-    inline friend 
-    _String_const_iterator operator-(difference_type _offset,
-                                const _String_const_iterator& _iter) noexcept
-    {
-        return operator-(_iter, _offset);
-    }
 
     inline friend difference_type operator-(const _String_const_iterator& lhs, 
                                     const _String_const_iterator& rhs) noexcept
@@ -212,12 +206,6 @@ public:
                                      difference_type _offset) noexcept
     {
         return _String_iterator(_iter.m_ptr_ - _offset);
-    }
-    inline friend 
-    _String_iterator operator-(difference_type _offset,
-                                const _String_iterator& _iter) noexcept
-    {
-        return operator-(_iter, _offset);
     }
 
     inline friend difference_type operator-(const _String_iterator& lhs, 

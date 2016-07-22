@@ -87,11 +87,6 @@ public:
     {
         return _Vec_const_iterator(_iter.m_ptr_ - _offset);
     }
-    inline friend _Vec_const_iterator operator-(difference_type _offset,
-                                    const _Vec_const_iterator& _iter) noexcept
-    {
-        return operator-(_iter, _offset);
-    }
 
     inline friend difference_type operator-(const _Vec_const_iterator& lhs, 
                                     const _Vec_const_iterator& rhs) noexcept
@@ -204,11 +199,6 @@ public:
                                             difference_type _offset) noexcept
     {
         return _Vec_iterator(_iter.m_ptr_ - _offset);
-    }
-    inline friend _Vec_iterator operator-(difference_type _offset,
-                                    const _Vec_iterator& _iter) noexcept
-    {
-        return operator-(_iter, _offset);
     }
 
     inline friend difference_type operator-(const _Vec_iterator& lhs, 
@@ -1011,16 +1001,16 @@ template <typename T, typename Allocator>
 inline bool operator==(const vector<T, Allocator>& lhs,
                        const vector<T, Allocator>& rhs)
 {
-    return lhs.size() == rhs.size(); /*&&
-            equal(lhs.begin(), lhs.end(), rhs.begin())*/
+    return lhs.size() == rhs.size() &&
+            wt::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <typename T, typename Allocator>
 inline bool operator<(const vector<T, Allocator>& lhs,
                       const vector<T, Allocator>& rhs)
 {
-    return lexicographical_compare(lhs.begin(), lhs.end(),
-                                   rhs.begin(), rhs.end());
+    return wt::lexicographical_compare(lhs.begin(), lhs.end(),
+                                       rhs.begin(), rhs.end());
 }
 
 template <typename T, typename Allocator>
@@ -1037,17 +1027,17 @@ inline bool operator!=(const vector<T, Allocator>& lhs,
 }
 
 template <typename T, typename Allocator>
-inline bool operator>(const vector<T, Allocator>& lhs,
-                      const vector<T, Allocator>& rhs)
-{
-    return rhs < lhs;
-}
-
-template <typename T, typename Allocator>
 inline bool operator<=(const vector<T, Allocator>& lhs,
                        const vector<T, Allocator>& rhs)
 {
     return !(rhs < lhs);
+}
+
+template <typename T, typename Allocator>
+inline bool operator>(const vector<T, Allocator>& lhs,
+                      const vector<T, Allocator>& rhs)
+{
+    return rhs < lhs;
 }
 
 template <typename T, typename Allocator>

@@ -20,7 +20,7 @@ inline void _iter_swap(ForwardIterator1 _a, ForwardIterator2 _b, T*)
 template <typename ForwardIterator1, typename ForwardIterator2>
 inline void iter_swap(ForwardIterator1 _a, ForwardIterator2 _b)
 {
-    _iter_swap(_a, _b);
+    _iter_swap(_a, _b, _VALUE_TYPE(_a));
 }
 
 template <typename T>
@@ -368,10 +368,24 @@ bool equal(InputIterator1 _first1, InputIterator1 _last1,
 }           
 
 template <typename InputIterator1, typename InputIterator2>
-bool equal(InputIterator1 _first1, InputIterator1 _last1,
-           InputIterator2 _first2, InputIterator2 _last2)
+bool _equal_dispatch(InputIterator1 _first1, InputIterator1 _last1,
+                     InputIterator2 _first2, InputIterator2 _last2,
+                     wt::input_iterator_tag, wt::input_iterator_tag)
 {
-    if(_last1 - _first1 != _last2 - _first2)
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
+    {
+        if(*_first1 != *_first2)
+            return false;
+    }
+    return (_first1 == _last1 && _first2 == _last2);
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2>
+bool _equal_dispatch(ForwardIterator1 _first1, ForwardIterator1 _last1,
+                     ForwardIterator2 _first2, ForwardIterator2 _last2,
+                     wt::forward_iterator_tag, wt::forward_iterator_tag)
+{
+    if(wt::distance(_first1, _last1) != wt::distance(_first2, _last2))
         return false;
     for(; _first1 != _last1; ++_first1, ++_first2)
     {
@@ -381,12 +395,38 @@ bool equal(InputIterator1 _first1, InputIterator1 _last1,
     return true;
 }
 
-template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
-bool equal(InputIterator1 _first1, InputIterator1 _last1,
-           InputIterator2 _first2, InputIterator2 _last2,
-           BinaryPredicate pred)
+template <typename InputIterator1, typename InputIterator2>
+inline bool equal(InputIterator1 _first1, InputIterator1 _last1,
+                  InputIterator2 _first2, InputIterator2 _last2)
 {
-    if(_last1 - _first1 != _last2 - _first2)
+    return _equal_dispatch(_first1, _last1, _first2, _last2,
+                           _ITERATOR_CATEGORY(_first1),
+                           _ITERATOR_CATEGORY(_first2));
+}
+
+template <typename InputIterator1, typename InputIterator2,
+          typename BinaryPredicate>
+bool _equal_dispatch(InputIterator1 _first1, InputIterator1 _last1,
+                     InputIterator2 _first2, InputIterator2 _last2,
+                     BinaryPredicate _pred, wt::input_iterator_tag,
+                     wt::input_iterator_tag)
+{
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
+    {
+        if(!_pred(*_first1, *_first2))
+            return false;
+    }
+    return (_first1 == _last1 && _first2 == _last2);
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2,
+          typename BinaryPredicate>
+bool _equal_dispatch(ForwardIterator1 _first1, ForwardIterator1 _last1,
+                     ForwardIterator2 _first2, ForwardIterator2 _last2,
+                     BinaryPredicate pred, wt::forward_iterator_tag,
+                     wt::forward_iterator_tag)
+{
+    if(wt::distance(_first1, _last1) != wt::distance(_first2, _last2))
         return false;
     for(; _first1 != _last1; ++_first1, ++_first2)
     {
@@ -396,6 +436,16 @@ bool equal(InputIterator1 _first1, InputIterator1 _last1,
     return true;
 }           
 
+template <typename InputIterator1, typename InputIterator2,
+          typename BinaryPredicate>
+inline bool equal(InputIterator1 _first1, InputIterator1 _last1,
+                  InputIterator2 _first2, InputIterator2 _last2,
+                  BinaryPredicate _pred)
+{
+    return _equal_dispatch(_first1, _last1, _first2, _last2, _pred,
+                           _ITERATOR_CATEGORY(_first1),
+                           _ITERATOR_CATEGORY(_first2));
+}
 /////////////////////////////
 // lexicographical_compare //
 /////////////////////////////

@@ -865,18 +865,7 @@ void list<T, Allocator>::sort(Compare _comp)
 template <typename T, typename Allocator>
 bool operator==(const list<T, Allocator>& lhs, const list<T,Allocator>& rhs)
 {
-    if(lhs.size() != rhs.size())
-        return false;
-    auto first1 = lhs.cbegin();
-    auto last1  = lhs.cend();
-    auto first2 = rhs.cbegin();
-    auto last2  = rhs.cend();
-    while(first1 != last1 && first2 != last2 && *first1 == *first2)
-    {
-        ++first1;
-        ++first2;
-    }
-    return  first1 == last1 && first2 == last2;
+    return wt::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
 }
 
 template <typename T, typename Allocator>
