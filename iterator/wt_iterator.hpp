@@ -305,7 +305,130 @@ inline reverse_iterator<Iterator> operator+(
     return iter + n;
 }
 
+template <typename Container>
+constexpr auto begin(Container& c) -> decltype(c.begin())
+{
+    return c.begin();
+}
+
+template <typename Container>
+constexpr auto begin(const Container& c) -> decltype(c.begin())
+{
+    return c.begin();
+}
+
+template <typename Container>
+constexpr auto cbegin(const Container& c) -> decltype(c.cbegin())
+{
+    return c.cbegin();
+}
+
+template <typename Container>
+constexpr auto end(Container& c) -> decltype(c.end())
+{
+    return c.end();
+}
+
+template <typename Container>
+constexpr auto end(const Container& c) -> decltype(c.end())
+{
+    return c.end();
+}
+
+template <typename Container>
+constexpr auto cend(const Container& c) -> decltype(c.cend())
+{
+    return c.cend();
+}
+
+template <typename T, std::size_t N>
+constexpr T* begin(T (&array)[N])
+{
+    return array;
+}
+
+template <typename T, std::size_t N>
+constexpr T* end(T (&array)[N])
+{
+    return array + N;
+}
+
+template <typename T>
+constexpr const T* begin(std::initializer_list<T> il)
+{
+    return il.begin();
+}
+
+template <typename T>
+constexpr const T* end(std::initializer_list<T> il)
+{
+    return il.end();
+}
+
+template <typename Container>
+constexpr auto rbegin(Container& c) -> decltype(c.rbegin())
+{
+    return c.rbegin();
+}
+
+template <typename Container>
+constexpr auto rbegin(const Container& c) -> decltype(c.rbegin())
+{
+    return c.rbegin();
+}
+
+template <typename Container>
+constexpr auto crbegin(const Container& c) -> decltype(c.crbegin())
+{
+    return c.crbegin();
+}
+
+template <typename Container>
+constexpr auto rend(Container& c) -> decltype(c.rend())
+{
+    return c.rend();
+}
+
+template <typename Container>
+constexpr auto rend(const Container& c) -> decltype(c.rend())
+{
+    return c.rend();
+}
+
+template <typename Container>
+constexpr auto crend(const Container& c) -> decltype(c.crend())
+{
+    return c.crend();
+}
+
+template <typename T, std::size_t N>
+constexpr wt::reverse_iterator<T*> rbegin(T (&array)[N])
+{
+    return wt::reverse_iterator<T*>(array + N);
+}
+
+template <typename T, std::size_t N>
+constexpr wt::reverse_iterator<T*> rend(T (&array)[N])
+{
+    return wt::reverse_iterator<T*>(array);
+}
+
+template <typename T>
+wt::reverse_iterator<const T*> rbegin(std::initializer_list<T> il)
+{
+    return wt::reverse_iterator<const T*>(il.end());
+}
+
+template <typename T>
+wt::reverse_iterator<const T*> rend(std::initializer_list<T> il)
+{
+    return wt::reverse_iterator<const T*>(il.begin());
+}
+
+
+
   // TODO stream_iterator
+
 
 } // namespace std
 

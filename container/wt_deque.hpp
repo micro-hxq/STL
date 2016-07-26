@@ -575,6 +575,11 @@ public:
     {
         this->swap(other);
     }
+    deque(std::initializer_list<T> _il, 
+          const allocator_type& _a = allocator_type()) : _Base(_a, _il.size())
+    {
+        wt::uninitialized_copy(_il.begin(), _il.end(), m_start_);
+    }
     ~deque()
     {
         wt::destroy(m_start_, m_finish_);
@@ -603,7 +608,21 @@ public:
         this->swap(other);
         return *this;
     }
-
+    deque& operator=(std::initializer_list<T> _il)
+    {
+        const size_type len = _il.size();
+        if(size() > len)
+        {
+            erase(wt::copy(_il.begin(), _il.end(), m_start_), m_finish_);
+        }
+        else
+        {
+            auto mid = _il.begin() + size();
+            wt::copy(_il.begin(), mid, m_start_);
+            insert(m_finish_, mid, _il.end());
+        }
+        return *this;
+    }
     void assign(size_type _count, const T& _value)
     {
         _fill_assign(_count, _value);
@@ -612,6 +631,10 @@ public:
     void assign(InputIterator _first, InputIterator _last)
     {
         _assign_dispatch(_first, _last, wt::is_integral<InputIterator>());
+    }
+    void assign(std::initializer_list<T> _il)
+    {
+        _assign(_il.begin(), _il.end(), wt::random_access_iterator_tag());
     }
     /**
      *  Element Access
@@ -785,7 +808,10 @@ public:
         _insert_dispatch(_pos, _first, _last, wt::is_integral<InputIterator>());
         return m_start_ + elem_before;
     }
-
+    iterator insert(const_iterator _pos, std::initializer_list<T> _il)
+    {
+        return insert(_pos, _il.begin(), _il.end());
+    }
     template <typename... Args>
     reference emplace_front(Args&&... args);
     template <typename... Args>
@@ -1646,17 +1672,11 @@ inline bool operator>=(const deque<T, Allocator>& lhs,
     return !(lhs < rhs);
 }
 
-
-
-
-
-
 template <typename T, typename Allocator>
 void swap(deque<T, Allocator>& lhs, deque<T,Allocator>& rhs)
 {
     lhs.swap(rhs);
 }
-
 
 } // namespace wt
 

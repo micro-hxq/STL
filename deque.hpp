@@ -6,6 +6,8 @@
 #include "allocator.hpp"
 #include "algorithm.hpp"
 
+#include <initializer_list>
+
 #include "container/wt_deque.hpp"
 
 #endif

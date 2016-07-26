@@ -1,4 +1,4 @@
-#include "iterator.hpp"
+#include "../iterator.hpp"
 #include <iostream>
 #include <vector>
 #include <deque>
@@ -44,6 +44,22 @@ int main(int argc, char const *argv[])
         *(iter_front++) = elem;
     for(auto elem : ivec3)
         std::cout << elem << ' ';
+    std::cout << std::endl;
+
+    std::initializer_list<int> il = {1, 2, 3, 4, 5};
+    std::cout << "il size: " << il.size() << std::endl;
+    for(auto iter1 = wt::rbegin(il), iter2 = wt::rend(il); iter1 != iter2; ++iter1)
+        std::cout << *iter1 << " ";
+    std::cout << std::endl;
+
+    int array[] = {10, 11, 12, 13, 14, 15};
+    for(auto iter1 = wt::rbegin(array), iter2 = wt::rend(array); iter1 != iter2; ++iter1)
+        std::cout << *iter1 << " ";
+    std::cout << std::endl;
+
+    for(auto iter1 = wt::begin(array), iter2 = wt::end(array); iter1 != iter2; ++iter1)
+        std::cout << *iter1 << " ";
+    std::cout << std::endl;
     /* code */
     return 0;
 }

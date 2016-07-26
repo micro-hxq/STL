@@ -38,6 +38,13 @@ TEST_CASE("deque_test", "[deque]") {
         d6 = wt::move(d8);
         REQUIRE(d8.empty() == true);
         REQUIRE(d6 == d3);
+        wt::deque<char> d9 = {'H', 'X', 'Q'};
+        test::print(d9.begin(), d9.end(), "initializer_list d9");
+        wt::deque<char> d10({'q', 'x', 'h', 'h', 'x', 'q'});
+        test::print(d10.begin(), d10.end(), "initializer_list d10");
+        d9 = {'a', 'b', 'c', 'd', 'e', 'f'};
+        test::print(d9.begin(), d9.end(), "initializer_list d9");
+
     }
 
     SECTION("assign") {
@@ -49,6 +56,8 @@ TEST_CASE("deque_test", "[deque]") {
         wt::deque<char> d2;
         d2.assign(d1.cbegin() + 20, d1.cend() - 20);
         REQUIRE(d2.size() == 960);
+        d1.assign({'b', 'b', 'c', 'c'});
+        test::print(d1.begin(), d1.end(), "assign d1");
     }
 
     SECTION("Element Access") {
@@ -147,6 +156,7 @@ TEST_CASE("deque_test", "[deque]") {
         REQUIRE(iter == d2.end() - 100);
         iter = d2.insert(d2.end() - 101, d3.cbegin(), d3.cend());
         REQUIRE(iter == d2.end() - 201);
+        d2.insert(d2.begin(), {4, 2, 3, 8, 1, 9});
         test::print(d2.begin(), d2.end(), "insert(pos, first, last) d2 + d3");
     }
 
