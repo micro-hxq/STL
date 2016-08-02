@@ -369,12 +369,12 @@ public:
     vector(size_type _count, const T& _value, 
            const Allocator& _alloc = allocator_type()) : _Base(_count, _alloc)
     {
-        m_finish_ = uninitialized_fill_n(m_start_, _count, _value);
+        m_finish_ = wt::uninitialized_fill_n(m_start_, _count, _value);
     }
     explicit vector(size_type _count, const Allocator& _alloc = allocator_type()) 
              : _Base(_count, _alloc)
     {
-        m_finish_ = uninitialized_fill_n(m_start_, _count, T());
+        m_finish_ = wt::uninitialized_fill_n(m_start_, _count, T());
     }
 
     template <typename InputIterator>
@@ -387,13 +387,13 @@ public:
     vector(const vector<T, Allocator>& other) 
     : _Base(other.size(), other.get_allocator())
     {
-        m_finish_ = uninitialized_copy(other.m_start_, other.m_finish_, m_start_);
+        m_finish_ = wt::uninitialized_copy(other.m_start_, other.m_finish_, m_start_);
     }
 
     vector(const vector<T, Allocator>& other, const Allocator& _alloc)
     : _Base(other.size(), _alloc)
     {
-        m_finish_ = uninitialized_copy(other.m_start_, other.m_finish_, m_start_);
+        m_finish_ = wt::uninitialized_copy(other.m_start_, other.m_finish_, m_start_);
     }
 
     vector(vector<T, Allocator>&& other) : _Base(other.get_allocator())
@@ -401,9 +401,24 @@ public:
         swap(other);
     }
 
-    ~vector() { destroy(m_start_, m_finish_); }
-    vector<T, Allocator>& operator=(const vector<T, Allocator>& other);
+    vector(std::initializer_list<T> _il,
+           const Allocator& _alloc = allocator_type())
+     : _Base(_il.size(), _alloc)
+    {
+        m_finish_ = wt::uninitialized_copy(_il.begin(), _il.end(), m_start_);
+    }
 
+    ~vector() { wt::destroy(m_start_, m_finish_); }
+    vector<T, Allocator>& operator=(const vector<T, Allocator>& other);
+    vector<T, Allocator>& operator=(vector<T, Allocator>&& other) noexcept
+    {
+        swap(other);
+    }
+    vector<T, Allocator>& operator=(std::initializer_list<T> _il)
+    {
+        assign(_il.begin(), _il.end());
+        return *this;
+    }
     void assign(size_type _count, const T& _value)
     {
         _fill_assign(_count, _value);
@@ -494,7 +509,18 @@ public:
     {
         if(m_end_of_storage_ != m_finish_)
         {
-            _deallocate(m_finish_, m_end_of_storage_ - m_finish_);
+            pointer new_start = _allocate(size());
+            pointer new_finish;
+            try {
+                new_finish = wt::uninitialized_copy(m_start_, m_finish_, new_start);
+            }
+            catch(...) {
+                _deallocate(new_start, size());
+                throw;
+            }
+            clear();
+            m_start_ = new_start;
+            m_finish_ = new_finish;
             m_end_of_storage_ = m_finish_;
         }
     }
@@ -559,7 +585,7 @@ public:
         size_type pos_diff = _pos.m_ptr_ - m_start_;
         if(m_finish_ != m_end_of_storage_ && _pos.m_ptr_ == m_finish_)
         {
-            construct(_pos.m_ptr_, _value);
+            wt::construct(_pos.m_ptr_, _value);
             ++m_finish_;
         }
         else
@@ -581,12 +607,63 @@ public:
         _insert_dispatch(_pos, _first, _last, is_integral<InputIterator>());
         return begin() + pos_diff;
     }
-    //TODO: push_back
+    iterator insert(const_iterator _pos, std::initializer_list<T> _il)
+    {
+        return insert(_pos, _il.begin(), _il.end());
+    }
+    
+    template <typename... Args>
+    iterator emplace(const_iterator _pos, Args&&... args)
+    {
+        const size_type pos_diff = _pos.m_ptr_ - m_start_;
+        if(m_finish_ != m_end_of_storage_ && _pos.m_ptr_ == m_finish_)
+        {
+            ::new (static_cast<void*>(m_finish_)) T(wt::forward<Args>(args)...);
+            ++m_finish_;
+        }
+        else
+        {
+            _emplace_aux(_pos, wt::forward<Args>(args)...);
+        }
+        return begin() + pos_diff;
+    }
+    template <typename... Args>
+    reference emplace_back(Args&&... args)
+    {
+        if(m_finish_ != m_end_of_storage_)
+        {
+            ::new (static_cast<void*>(m_finish_)) T(wt::forward<Args>(args)...);
+            ++m_finish_;
+        }
+        else
+        {
+            _emplace_aux(end(), wt::forward<Args>(args)...);
+        }
+        return *(m_finish_ - 1);
+    }
+
+    iterator erase(const_iterator _pos)
+    {
+        if(_pos.m_ptr_ + 1 != m_finish_)
+            wt::copy(_pos.m_ptr_ + 1, m_finish_, _pos.m_ptr_);
+        --m_finish_;
+        wt::destroy(m_finish_);
+        return iterator(_pos.m_ptr_);
+    }
+    iterator erase(const_iterator _first, const_iterator _last)
+    {
+        pointer temp = wt::copy(_last.m_ptr_, m_finish_, _first.m_ptr_);
+        wt::destroy(temp, m_finish_);
+        m_finish_ = temp;
+        // m_finish_ = m_finish_ - (_last - _first);
+        return iterator(_first.m_ptr_);
+    }
+
     void push_back(const T& _value)
     {
         if(m_finish_ != m_end_of_storage_)
         {
-            construct(m_finish_, _value);
+            wt::construct(m_finish_, _value);
             ++m_finish_;
         }
         else
@@ -597,25 +674,9 @@ public:
     void pop_back()
     {
         --m_finish_;
-        destroy(m_finish_);
+        wt::destroy(m_finish_);
     }
 
-    iterator erase(const_iterator _pos)
-    {
-        if(_pos.m_ptr_ + 1 != m_finish_)
-            copy(_pos.m_ptr_ + 1, m_finish_, _pos.m_ptr_);
-        --m_finish_;
-        destroy(m_finish_);
-        return iterator(_pos.m_ptr_);
-    }
-    iterator erase(const_iterator _first, const_iterator _last)
-    {
-        pointer temp = copy(_last.m_ptr_, m_finish_, _first.m_ptr_);
-        destroy(temp, m_finish_);
-        m_finish_ = temp;
-        // m_finish_ = m_finish_ - (_last - _first);
-        return iterator(_first.m_ptr_);
-    }
     void resize(size_type _count, const T& _value)
     {
         if(_count < size())
@@ -647,7 +708,7 @@ protected:
     {
         m_start_ = _allocate(_count);
         m_end_of_storage_ = m_start_ + _count;
-        m_finish_ = uninitialized_fill_n(m_start_, _count, _value);
+        m_finish_ = wt::uninitialized_fill_n(m_start_, _count, _value);
     }
     template <typename InputIterator>
     void _initialize_aux(InputIterator _first, InputIterator _last, false_type)
@@ -669,10 +730,10 @@ protected:
     void _range_initialize(ForwardIterator _first, ForwardIterator _last,
                            forward_iterator_tag)
     {
-        size_type n_elems = distance(_first, _last);
+        size_type n_elems = wt::distance(_first, _last);
         m_start_ = _allocate(n_elems);
         m_end_of_storage_ = m_start_ + n_elems;
-        m_finish_ =  uninitialized_copy(_first, _last, m_start_);
+        m_finish_ =  wt::uninitialized_copy(_first, _last, m_start_);
     }
 
     template <typename ForwardIterator>
@@ -681,7 +742,7 @@ protected:
     {
         pointer _result = _allocate(_n);
         try {
-            uninitialized_copy(_first, _last, _result);
+            wt::uninitialized_copy(_first, _last, _result);
         }
         catch(...) {
             _deallocate(_result, _n);
@@ -731,6 +792,8 @@ protected:
     template <typename ForwardIterator>
     void _range_insert(const_iterator _pos,ForwardIterator _first,
                        ForwardIterator _last, forward_iterator_tag);
+    template <typename... Args>
+    void _emplace_aux(const_iterator _pos, Args&&... args);
 };
 
 
@@ -743,7 +806,7 @@ void vector<T, Allocator>::reserve(size_type _new_cap)
     {
         const size_type old_size = size();
         iterator temp = _allocate_and_copy(_new_cap, begin(), end());
-        destroy(m_start_, m_finish_);
+        wt::destroy(m_start_, m_finish_);
         _deallocate(m_start_, m_end_of_storage_ - m_start_);
         m_start_ = temp.m_ptr_;
         m_finish_ = m_start_ + old_size;
@@ -761,7 +824,7 @@ vector<T, Allocator>::operator=(const vector<T, Allocator>& other)
         if(other_size > capacity())
         {
             iterator temp = _allocate_and_copy(other_size, other.begin(), other.end());
-            destroy(m_start_, m_finish_);
+            wt::destroy(m_start_, m_finish_);
             _deallocate(m_start_, m_end_of_storage_ - m_start_);
             m_start_ = temp.m_ptr_;
             m_end_of_storage_ = m_start_ + other_size;
@@ -769,12 +832,12 @@ vector<T, Allocator>::operator=(const vector<T, Allocator>& other)
         else if(other_size < size())
         {
             iterator new_finish = copy(other.begin(), other.end(), begin());
-            destroy(new_finish.m_ptr_, m_finish_);
+            wt::destroy(new_finish.m_ptr_, m_finish_);
         }
         else
         {
-            copy(other.begin(), other.begin() + size(), begin());
-            uninitialized_copy(other.begin() + size(), other.end(), end());
+            wt::copy(other.begin(), other.begin() + size(), begin());
+            wt::uninitialized_copy(other.begin() + size(), other.end(), end());
         }
         m_finish_ = m_start_ + other.size();
     }
@@ -793,7 +856,7 @@ void vector<T, Allocator>::_fill_assign(size_type _count, const T& _value)
     else if(_count > size())
     {
         fill(begin(), end(), _value);
-        m_finish_ = uninitialized_fill_n(m_finish_, _count - size(), _value);
+        m_finish_ = wt::uninitialized_fill_n(m_finish_, _count - size(), _value);
     }
     else
     {
@@ -824,12 +887,12 @@ void vector<T, Allocator>::_assign_dispatch_aux(ForwardIterator _first,
                                                 ForwardIterator _last,
                                                 forward_iterator_tag)
 {
-    auto _count = static_cast<size_type>(distance(_first, _last));
+    auto _count = static_cast<size_type>(wt::distance(_first, _last));
     if(_count > capacity())
     {
         pointer temp = _allocate(_count);
-        uninitialized_copy(_first, _last, temp);
-        destroy(m_start_, m_finish_);
+        wt::uninitialized_copy(_first, _last, temp);
+        wt::destroy(m_start_, m_finish_);
         _deallocate(m_start_, m_end_of_storage_ - m_start_);
         m_start_ = temp;
         m_end_of_storage_ = m_finish_ = m_start_ + _count;
@@ -840,8 +903,8 @@ void vector<T, Allocator>::_assign_dispatch_aux(ForwardIterator _first,
     }
     else
     {
-        copy(_first, _first + size(), begin());
-        m_finish_ = uninitialized_copy(_first + size(), _last, m_finish_);
+        wt::copy(_first, _first + size(), begin());
+        m_finish_ = wt::uninitialized_copy(_first + size(), _last, m_finish_);
     }
 }
 
@@ -850,9 +913,9 @@ void vector<T, Allocator>::_insert_aux(const_iterator _pos, const T& _value)
 {
     if(m_finish_ != m_end_of_storage_)
     {
-        construct(m_finish_, *(m_finish_ - 1));
+        wt::construct(m_finish_, *(m_finish_ - 1));
         ++m_finish_;
-        copy_backward(_pos.m_ptr_, m_finish_ - 2, m_finish_ - 1);
+        wt::copy_backward(_pos.m_ptr_, m_finish_ - 2, m_finish_ - 1);
         *(_pos.m_ptr_) = _value;
     }
     else
@@ -862,17 +925,17 @@ void vector<T, Allocator>::_insert_aux(const_iterator _pos, const T& _value)
         pointer new_start = _allocate(length);
         pointer new_finish = new_start;
         try {
-            new_finish = uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
-            construct(new_finish, _value);
+            new_finish = wt::uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
+            wt::construct(new_finish, _value);
             ++new_finish;
-            new_finish = uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
+            new_finish = wt::uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
         }
         catch(...) {
-            destroy(new_start, new_finish);
+            wt::destroy(new_start, new_finish);
             _deallocate(new_start, length);
             throw;
         }
-        destroy(m_start_, m_finish_);
+        wt::destroy(m_start_, m_finish_);
         _deallocate(m_start_, m_end_of_storage_ - m_start_);
         m_start_ = new_start;
         m_finish_ = new_finish;
@@ -892,37 +955,37 @@ void vector<T, Allocator>::_fill_insert(const_iterator _pos, size_type _count,
             pointer old_finish = m_finish_;
             if(elems_after_pos > _count)
             {
-                uninitialized_copy(old_finish - _count, old_finish, m_finish_);
+                wt::uninitialized_copy(old_finish - _count, old_finish, m_finish_);
                 m_finish_ += _count;
-                copy_backward(_pos.m_ptr_, old_finish - _count, old_finish);
-                fill(_pos.m_ptr_, _pos.m_ptr_ + _count, _value);
+                wt::copy_backward(_pos.m_ptr_, old_finish - _count, old_finish);
+                wt::fill(_pos.m_ptr_, _pos.m_ptr_ + _count, _value);
             }
             else
             {
-                uninitialized_fill_n(old_finish, _count - elems_after_pos, _value);
+                wt::uninitialized_fill_n(old_finish, _count - elems_after_pos, _value);
                 m_finish_ += _count - elems_after_pos;
-                uninitialized_copy(_pos.m_ptr_, old_finish, m_finish_);
+                wt::uninitialized_copy(_pos.m_ptr_, old_finish, m_finish_);
                 m_finish_ += elems_after_pos;
-                fill(_pos.m_ptr_, old_finish, _value);
+                wt::fill(_pos.m_ptr_, old_finish, _value);
             }
         }
         else
         {
             const size_type old_size = size();
-            const size_type length = old_size + max(old_size, _count);
+            const size_type length = old_size + wt::max(old_size, _count);
             pointer new_start = _allocate(length);
             pointer new_finish = new_start;
             try {
-                new_finish = uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
-                new_finish = uninitialized_fill_n(new_finish, _count, _value);
-                new_finish = uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
+                new_finish = wt::uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
+                new_finish = wt::uninitialized_fill_n(new_finish, _count, _value);
+                new_finish = wt::uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
             }
             catch(...) {
-                destroy(new_start, new_finish);
+                wt::destroy(new_start, new_finish);
                 _deallocate(new_start, length);
                 throw;
             }
-            destroy(m_start_, m_finish_);
+            wt::destroy(m_start_, m_finish_);
             _deallocate(m_start_, m_end_of_storage_ - m_start_);
             m_start_ = new_start;
             m_finish_ = new_finish;
@@ -950,27 +1013,27 @@ void vector<T, Allocator>::_range_insert(const_iterator _pos, ForwardIterator _f
 {
     if(_first != _last)
     {
-        size_type _count = distance(_first, _last);
+        size_type _count = wt::distance(_first, _last);
         if(size_type(m_end_of_storage_ - m_finish_) >= _count)
         {
             const size_type elems_after_pos = m_finish_ - _pos.m_ptr_;
             pointer old_finish = m_finish_;
             if(elems_after_pos > _count)
             {
-                uninitialized_copy(old_finish - _count, old_finish, m_finish_);
+                wt::uninitialized_copy(old_finish - _count, old_finish, m_finish_);
                 m_finish_ += _count;
-                copy_backward(_pos.m_ptr_, old_finish - _count, old_finish);
-                copy(_first, _last, _pos.m_ptr_);
+                wt::copy_backward(_pos.m_ptr_, old_finish - _count, old_finish);
+                wt::copy(_first, _last, _pos.m_ptr_);
             }
             else
             {
                 ForwardIterator mid_insert = _first;
-                advance(mid_insert, elems_after_pos);
-                uninitialized_copy(mid_insert, _last, old_finish);
+                wt::advance(mid_insert, elems_after_pos);
+                wt::uninitialized_copy(mid_insert, _last, old_finish);
                 m_finish_ += _count - elems_after_pos;
-                uninitialized_copy(_pos.m_ptr_, old_finish, m_finish_);
+                wt::uninitialized_copy(_pos.m_ptr_, old_finish, m_finish_);
                 m_finish_ += elems_after_pos;
-                copy(_first, mid_insert, _pos.m_ptr_);
+                wt::copy(_first, mid_insert, _pos.m_ptr_);
             }
         }
         else
@@ -980,21 +1043,58 @@ void vector<T, Allocator>::_range_insert(const_iterator _pos, ForwardIterator _f
             pointer new_start = _allocate(length);
             pointer new_finish = new_start;
             try {
-                new_finish = uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
-                new_finish = uninitialized_copy(_first, _last, new_finish);
-                new_finish = uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
+                new_finish = wt::uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
+                new_finish = wt::uninitialized_copy(_first, _last, new_finish);
+                new_finish = wt::uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
             }
             catch(...) {
-                destroy(new_start, new_finish);
+                wt::destroy(new_start, new_finish);
                 _deallocate(new_start, length);
             }
-            destroy(m_start_, m_finish_);
+            wt::destroy(m_start_, m_finish_);
             _deallocate(m_start_, m_end_of_storage_ - m_start_);
             m_start_ = new_start;
             m_finish_ = new_finish;
             m_end_of_storage_ = m_start_ + length;
         }
     }   
+}
+
+template <typename T, typename Allocator>
+template <typename... Args>
+void vector<T, Allocator>::_emplace_aux(const_iterator _pos, Args&&... args)
+{
+    if(m_finish_ != m_end_of_storage_)
+    {
+        wt::construct(m_finish_, *(m_finish_ - 1));
+        ++m_finish_;
+        wt::copy_backward(_pos.m_ptr_, m_finish_ - 2, m_finish_ - 1);
+        wt::destroy(_pos.m_ptr_);
+        ::new (static_cast<void*>(_pos.m_ptr_)) T(wt::forward<Args>(args)...);
+    }
+    else
+    {
+        const size_type old_size = size();
+        const size_type length = old_size == 0 ? 1 : 2 * old_size;
+        pointer new_start = _allocate(length);
+        pointer new_finish = new_start;
+        try {
+            new_finish = wt::uninitialized_copy(m_start_, _pos.m_ptr_, new_start);
+            ::new (static_cast<void*>(new_finish)) T(wt::forward<Args>(args)...);
+            ++new_finish;
+            new_finish = wt::uninitialized_copy(_pos.m_ptr_, m_finish_, new_finish);
+        }
+        catch(...) {
+            wt::destroy(new_start, new_finish);
+            _deallocate(new_start, length);
+            throw;
+        }
+        wt::destroy(m_start_, m_finish_);
+        _deallocate(m_start_, m_end_of_storage_ - m_start_);
+        m_start_ = new_start;
+        m_finish_ = new_finish;
+        m_end_of_storage_ = m_start_ + length;
+    }
 }
 
 template <typename T, typename Allocator>

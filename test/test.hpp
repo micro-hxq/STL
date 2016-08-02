@@ -7,6 +7,19 @@
 
 namespace test {
 
+template <typename Container>
+void print(const Container& container, const std::string& info)
+{
+    int count = 0;
+    std::cout << "-----<" << info << " begin>-----\n";
+    for(const auto& elem : container)
+    {
+        ++count;
+        std::cout << elem << ' ';
+    }
+    std::cout << "\nsize: " << count << "\n-----<" << info << " end>-----" << std::endl;
+}
+
 template <typename InputIt>
 void print(InputIt _first, InputIt _last, const std::string& info)
 {

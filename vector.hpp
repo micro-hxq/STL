@@ -18,7 +18,7 @@
 #include "algorithm/wt_algo_base.hpp"
 #include "algorithm/wt_uninitialized.hpp"
 
-
+#include <initializer_list>
 
 
 #include "container/wt_vector.hpp"

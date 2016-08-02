@@ -1,37 +1,8 @@
-#define CATCH_CONFIG_MAIN
+#include "test.hpp"
 
 #include "../vector.hpp"
 
-#include <iostream>
-#include <string>
-#include "catch.hpp"
-
-template <typename Container>
-void print(const Container& _container, const std::string& _info)
-{
-    int count = 0;
-    std::cout << "----" << _info << "----start\n";
-    for(const auto& elem : _container)
-    {
-        ++count;
-        std::cout << elem << ' ';
-    }
-    std::cout << "\nsize: " << count << "\n----" << _info << "----end" << std::endl;
-}
-
-template <typename BidirectinoalIterator>
-void print(BidirectinoalIterator _first, BidirectinoalIterator _last, const std::string& _info)
-{
-    int count = 0;
-    std::cout << "----" << _info << "----start\n";
-    for(; _first != _last; ++_first)
-    {
-        ++count;
-        std::cout << *_first << " ";
-    }
-
-    std::cout << "\nsize: " << count << "\n----" << _info << "----end" << std::endl;
-}
+using namespace test;
 
 TEST_CASE("vector","[vector]") {
     SECTION("constructor") {
@@ -47,6 +18,11 @@ TEST_CASE("vector","[vector]") {
         wt::vector<int> v4(v1.begin(), v1.end() - 1);
         REQUIRE(v4.size() == 9);
         REQUIRE(v1 != v4);
+        wt::vector<char> v6({'a', 'b', 'c', 'x', 'y', 'z'});
+        REQUIRE(v6.size() == 6);
+        print(v6, "initializer_list");
+        v6 = {'h', 'x', 'q'};
+        print(v6, "operator=");
     }
 
     SECTION("iterator") {
@@ -93,6 +69,7 @@ TEST_CASE("vector","[vector]") {
         std::cout << "max size: " << cv.max_size() << std::endl;
         std::cout << "capacity: " << cv.capacity() << std::endl;
         cv.shrink_to_fit();
+        std::cout << "capacity: " << cv.capacity() << std::endl;
         REQUIRE(cv.size() == cv.capacity());
         cv.reserve(20);
         REQUIRE(cv.size() == 26);
@@ -153,5 +130,16 @@ TEST_CASE("vector","[vector]") {
         wt::swap(cv1, cv2);
         print(cv1, "cv1");
         print(cv2, "cv2");
+        wt::vector<char> v1 = {'x', 'y', 'z'};
+        v1.insert(v1.begin() + 1, {'q', 'x', 'h'});
+        print(v1, "insert initializer_list");
+    }
+
+    SECTION("emplace") {
+        wt::vector<std::string> v1 = {"hello", " , ", "world"};
+        print(v1, "emplace");
+        v1.emplace_back(10, 'x');
+        REQUIRE(v1.size() == 4);
+        print(v1, "emplace_back");
     }
 }
