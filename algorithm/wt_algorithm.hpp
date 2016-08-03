@@ -230,7 +230,15 @@ _find_end_dispatch(BidirectionalIterator1 _first, BidirectionalIterator1 _last,
 }
 
 
-
+template <typename ForwardIterator1, typename ForwardIterator2>
+ForwardIterator2 
+swap_ranges(ForwardIterator1 _first1, ForwardIterator1 _last1,
+            ForwardIterator2 _first2)
+{
+  for(; _first1 != _last1; ++_first1, ++_first2)
+    wt::iter_swap(_first1, _first2);
+  return _first2;
+}
 
 
 
