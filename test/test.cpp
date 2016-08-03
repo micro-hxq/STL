@@ -8,7 +8,9 @@
 #include "../functional.hpp"
 #include "../list.hpp"
 #include "../deque.hpp"
-
+#include "../stack.hpp"
+#include "../queue.hpp"
+#include "../array.hpp"
 
 #include <iostream>
 
