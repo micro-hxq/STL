@@ -253,8 +253,8 @@ public:
     typedef value_type*                                             pointer;
     typedef _List_const_iterator<value_type>                        const_iterator;
     typedef _List_iterator<value_type>                              iterator;
-    typedef reverse_iterator<const_iterator>                        const_reverse_iterator;
-    typedef reverse_iterator<iterator>                              reverse_iterator;
+    typedef wt::reverse_iterator<const_iterator>                    const_reverse_iterator;
+    typedef wt::reverse_iterator<iterator>                          reverse_iterator;
 
     allocator_type get_allocator() const 
     {

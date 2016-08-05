@@ -348,8 +348,8 @@ public:
     typedef std::ptrdiff_t                      difference_type;
 
     typedef typename _Base::allocator_type      allocator_type;
-    typedef reverse_iterator<const_iterator>    const_reverse_iterator;
-    typedef reverse_iterator<iterator>          reverse_iterator;
+    typedef wt::reverse_iterator<const_iterator>    const_reverse_iterator;
+    typedef wt::reverse_iterator<iterator>          reverse_iterator;
 
     allocator_type get_allocator() const
     {

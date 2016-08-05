@@ -1,16 +1,17 @@
 #include "../type_traits.hpp"
 #include "../utility.hpp"
-#include "../allocator.hpp"
 #include "../iterator.hpp"
+#include "../allocator.hpp"
+#include "../functional.hpp"
 #include "../algorithm.hpp"
 #include "../vector.hpp"
 #include "../string.hpp"
-#include "../functional.hpp"
 #include "../list.hpp"
 #include "../deque.hpp"
 #include "../stack.hpp"
 #include "../queue.hpp"
 #include "../array.hpp"
+#include "../forward_list.hpp"
 
 #include <iostream>
 
