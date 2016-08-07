@@ -428,11 +428,11 @@ public:
     }
     const_iterator before_begin() const noexcept
     {
-        return const_iterator(&m_head_);
+        return const_iterator(const_cast<_Node*>(&m_head_));
     }
     const_iterator cbefore_begin() const noexcept
     {
-        return const_iterator(&m_head_);
+        return const_iterator(const_cast<_Node*>(&m_head_));
     }
     
     iterator begin() noexcept
