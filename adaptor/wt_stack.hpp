@@ -43,19 +43,7 @@ public:
      : m_container_(wt::move(other.m_container_), _alloc) {}
 
     ~stack() {}
-
-    stack& operator=(const stack& other)
-    {
-        if(this != &other)
-            m_container_ = other.m_container_;
-        return *this;
-    }
-    stack& operator=(stack&& other)
-    {
-        if(this != &other)
-            m_container_ = wt::move(other.m_container_);
-        return *this;
-    }
+    
     /**
      *  Element Access
      */

@@ -16,19 +16,6 @@ TEST_CASE("queue test", "[queue]") {
         wt::queue<int> q6(wt::move(q5));
     }
 
-    SECTION("operator=") {
-        wt::deque<char> d1 = {'h', 'x', 'q'};
-        wt::queue<char> q1(d1);
-        wt::queue<char> q2;
-        q2 = q1;
-        REQUIRE(q1 == q2);
-        wt::queue<char> q3;
-        q3 = wt::move(q2);
-        REQUIRE(q1 == q3);
-        q2.swap(q3);
-        REQUIRE(q1 == q2);
-    }
-
     SECTION("Operations") {
         wt::deque<int> d1({4, 2, 3});
         wt::queue<int> q1(d1);

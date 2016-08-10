@@ -14,12 +14,6 @@ TEST_CASE("stack test", "[stack]") {
         wt::stack<int> s5(s4);
     }
 
-    SECTION("operator=") {
-        wt::stack<int> s1, s2;
-        s2 = s1;
-        s2 = wt::move(s1);
-    }
-
     SECTION("operations") {
         wt::stack<char> s1;
         s1.push('h');

@@ -42,8 +42,73 @@ struct not_equal_to<void> {
     }
 };
 
+template <typename T = void>
+struct greater {
+    constexpr bool operator()(const T& lhs, const T& rhs) const
+    {
+        return lhs > rhs;
+    }
+};
 
+template <>
+struct greater<void> {
+    template <typename T, typename U>
+    constexpr auto operator()(T&& lhs, U&& rhs) const
+    {
+        return wt::forward<T>(lhs) > wt::forward<U>(rhs);
+    }
+};
 
+template <typename T = void>
+struct less {
+    constexpr bool operator()(const T& lhs, const T& rhs) const
+    {
+        return lhs < rhs;
+    }
+};
+
+template <>
+struct less<void> {
+    template <typename T, typename U>
+    constexpr auto operator()(T&& lhs, U&& rhs) const
+    {
+        return wt::forward<T>(lhs) < wt::forward<U>(rhs);
+    }
+};
+
+template <typename T = void>
+struct great_equal {
+    constexpr bool operator()(const T& lhs, const T& rhs) const
+    {
+        return lhs >= rhs;
+    }
+};
+
+template <>
+struct great_equal<void> {
+    template <typename T, typename U>
+    constexpr auto operator()(T&& lhs, U&& rhs) const
+    {
+        return wt::forward<T>(lhs) >= wt::forward<U>(rhs);
+    }
+};
+
+template <typename T = void>
+struct less_equal {
+    constexpr bool operator()(const T& lhs, const T& rhs) const
+    {
+        return lhs <= rhs;
+    }
+};
+
+template <>
+struct less_equal<void> {
+    template <typename T, typename U>
+    constexpr auto operator()(T&& lhs, U&& rhs) const
+    {
+        return wt::forward<T>(lhs) <= wt::forward<U>(rhs);
+    }
+};
 
 
 

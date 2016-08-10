@@ -45,17 +45,6 @@ public:
 
     ~queue() {}
 
-    queue& operator=(const queue& other)
-    {
-        m_container_ = other.m_container_;
-        return *this;
-    }
-    queue& operator=(queue&& other)
-    {
-        m_container_ = wt::move(other.m_container_);
-        return *this;
-    }
-
     /**
      *  Element Access
      */

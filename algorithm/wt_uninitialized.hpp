@@ -32,7 +32,7 @@ _uninitialized_copy_aux(InputIterator _first, InputIterator _last,
     try {
         for(; _first != _last; ++_first, ++_current)
         {
-            construct(&*_current, *_first);
+            wt::construct(&*_current, *_first);
         }
     }
     catch(...) {

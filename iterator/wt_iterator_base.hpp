@@ -61,7 +61,7 @@ template <typename Iterator>
 typename iterator_traits<Iterator>::difference_type*
 _difference_type(const Iterator& )
 {
-    return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
+    return static_cast<typename iterator_traits<Iterator>::difference_type*>(nullptr);
 }
 
 // note: the return type is pointer, not value_type of Iterator.
@@ -69,7 +69,7 @@ template <typename Iterator>
 typename iterator_traits<Iterator>::value_type*
 _value_type(const Iterator& )
 {
-    return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
+    return static_cast<typename iterator_traits<Iterator>::value_type*>(nullptr);
 }
 
 #define _ITERATOR_CATEGORY(iter)    _iterator_category(iter)
