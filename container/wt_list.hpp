@@ -451,9 +451,17 @@ public:
     {
         insert(begin(), _value);
     }
+    void push_front(T&& _value)
+    {
+        emplace_front(wt::move(_value));
+    }
     void push_back(const T& _value)
     {
         insert(end(), _value);
+    }
+    void push_back(T&& _value)
+    {
+        emplace_back(wt::move(_value));
     }
     void pop_front()
     {

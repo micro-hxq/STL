@@ -671,6 +671,12 @@ public:
             _insert_aux(end(), _value);
         }
     }
+
+    void push_back(T&& _value)
+    {
+        emplace_back(wt::move(_value));
+    }
+
     void pop_back()
     {
         --m_finish_;

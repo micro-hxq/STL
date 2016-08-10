@@ -82,10 +82,11 @@ public:
     {
         m_container_.push_back(_value);
     }
-    // void push(value_type&& _value)
-    // {
-    //     m_container_.push_back(wt::move(_value));
-    // }
+    void push(value_type&& _value)
+    {
+        m_container_.push_back(wt::move(_value));
+    }
+    
     template <typename... Args>
     reference emplace(Args&&... args)
     {

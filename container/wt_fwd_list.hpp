@@ -531,6 +531,11 @@ public:
         fwd_list_insert_node(&m_head_, _create_node(_value));
     }
 
+    void push_front(T&& _value)
+    {
+        emplace_front(wt::move(_value));
+    }
+
     void pop_front()
     {
         _erase_after(&m_head_);

@@ -757,7 +757,15 @@ public:
      */
     void clear();
     void push_front(const T& _value);
+    void push_front(T&& _value)
+    {
+        emplace_front(wt::move(_value));
+    }
     void push_back(const T& _value);
+    void push_back(T&& _value)
+    {
+        emplace_back(wt::move(_value));
+    }
     void pop_front();
     void pop_back();
 
