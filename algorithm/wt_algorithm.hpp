@@ -855,9 +855,819 @@ unique_copy(InputIterator _first, InputIterator _last,
                                     _dest, _pred, _ITERATOR_CATEGORY(_dest));
 }
 
+//////////////////////////////
+//  Partitioning Operations //
+//////////////////////////////
+
+//  partition
+//  partition_copy
+template <typename ForwardIterator, typename UnaryPredicate>
+ForwardIterator
+_partition_dispatch(ForwardIterator _first, ForwardIterator _last,
+                    UnaryPredicate _pred, wt::forward_iterator_tag)
+{
+    _first = wt::find_if_not(_first, _last, _pred);
+    if(_first == _last)
+        return _last;
+    ForwardIterator next = _first;
+    while(++next != _last)
+    {
+        if(_pred(*next))
+            wt::iter_swap(_first++, next);
+    }
+    return _first;
+}
+
+template <typename BidirectionalIterator, typename UnaryPredicate>
+BidirectionalIterator
+_partition_dispatch(BidirectionalIterator _first, BidirectionalIterator _last,
+                    UnaryPredicate _pred, wt::bidirectional_iterator_tag)
+{
+    if(_first == _last)
+        return _last;
+    --_last;
+    while(true)
+    {
+        while(_first != _last && _pred(*_first))
+            ++_first;
+        while(_first != _last && !_pred(*_last))
+            --_last;
+        if(_first != _last)
+            wt::iter_swap(_first, _last);
+        else
+            break;
+    }
+    return _first;
+}
+
+template <typename ForwardIterator, typename UnaryPredicate>
+inline ForwardIterator
+partition(ForwardIterator _first, ForwardIterator _last, UnaryPredicate _pred)
+{
+    return wt::_partition_dispatch(_first, _last, _pred, 
+                                   _ITERATOR_CATEGORY(_first));
+}
+
+template <typename InputIterator, typename OutputIterator1, 
+          typename OutputIterator2, typename UnaryPredicate>
+wt::pair<OutputIterator1, OutputIterator2>
+partition_copy(InputIterator _first, InputIterator _last,
+               OutputIterator1 _dest_true, OutputIterator2 _dest_false,
+               UnaryPredicate _pred)
+{
+    for(; _first != _last; ++_first)
+    {
+        if(_pred(*_first))
+            *_dest_true++  = *_first;
+        else
+            *_dest_false++ = *_first;
+    }
+    return wt::make_pair(_dest_true, _dest_false);
+}
+
+//  is_partitioned
+template <typename InputIterator, typename UnaryPredicate>
+bool
+is_partitioned(InputIterator _first, InputIterator _last, UnaryPredicate _pred)
+{
+    while(_first != _last && _pred(*_first))
+        ++_first;
+    while(_first != _last && !_pred(*_first))
+        ++_first;
+    return _first == _last;
+}
+//  partition_point
+// template <typename ForwardIterator, typename UnaryPredicate>
+// ForwardIterator
+// _partition_point_dispatch(ForwardIterator _first, ForwardIterator _last,
+//                           UnaryPredicate _pred, wt::forward_iterator_tag)
+// {
+//     while(_first != _last && _pred(*_first))
+//         ++_first;
+//     return _first;
+// }
+
+// template <typename BidirectionalIterator, typename UnaryPredicate>
+// BidirectionalIterator
+// _partition_point_dispatch(BidirectionalIterator _first,
+//                           BidirectionalIterator _last,
+//                           UnaryPredicate _pred,
+//                           wt::bidirectional_iterator_tag)
+// {
+//     if(_first == _last)
+//         return _last;
+//     while(true)
+//     {
+//         --_last;
+//         if(!_pred(*_first))
+//             return _first;
+//         if(_pred(*_last))
+//             return ++_last;
+//         ++_first;
+//     }
+// }
+
+// template <typename RandomAccessIterator, typename UnaryPredicate>
+// RandomAccessIterator
+// _partition_point_dispatch(RandomAccessIterator _first,
+//                           RandomAccessIterator _last,
+//                           UnaryPredicate _pred,
+//                           wt::random_access_iterator_tag)
+// {
+//     RandomAccessIterator mid;
+//     while(_first != _last)
+//     {
+//         mid = _first + wt::distance(_first, _last) / 2;
+//         if(_pred(*mid))
+//         {
+//             if(++mid != _last && !_pred(*mid))
+//                 return mid;
+//             _first = mid;
+//         }
+//         else
+//         {
+//             if(mid != _first && _pred(*(--mid)))
+//                 return ++mid;
+//             _last = mid;
+//         }
+//     }
+//     return _last;
+// }
+
+// template <typename ForwardIterator, typename UnaryPredicate>
+// inline ForwardIterator
+// partition_point(ForwardIterator _first, ForwardIterator _last,
+//                 UnaryPredicate _pred)
+// {
+//     return wt::_partition_point_dispatch(_first, _last, _pred,
+//                                          _ITERATOR_CATEGORY(_first));
+// }
+//  Time Complexity: log2(N)
+template <typename ForwardIterator, typename UnaryPredicate>
+ForwardIterator
+partition_point(ForwardIterator _first, ForwardIterator _last,
+                UnaryPredicate _pred)
+{
+    ForwardIterator mid;
+    auto len = wt::distance(_first, _last);
+    while(len > 0)
+    {
+        mid = _first;
+        auto step = len / 2;
+        wt::advance(mid, step);
+        if(_pred(*mid))
+        {
+            _first = ++mid;
+            len -= step + 1;
+        }
+        else
+        {
+            len = step;
+        }
+    }
+    return _first;
+}
+
+//  two categories for stable_partition
+struct less_time { };
+struct less_space { };
+
+//  Time Complexity: N
+//  Space Complexity: <= 2 * N;
+template <typename BidirectionalIterator, typename UnaryPredicate>
+BidirectionalIterator
+_stable_partition_dispatch(BidirectionalIterator _first, 
+                           BidirectionalIterator _last,
+                           UnaryPredicate _pred, wt::less_time)
+{
+    if(_first == _last)
+        return _last;
+
+    const auto N = wt::distance(_first, _last);
+
+    typedef typename wt::iterator_traits<BidirectionalIterator>::value_type _Ty;
+    _Ty* aux = new _Ty[N];
+    std::size_t index = 0;
+
+    BidirectionalIterator next = _first;
+    for(; next != _last; ++next)
+    {
+        if(!_pred(*next))
+            aux[index++] = wt::move(*next);
+        else if(next != _first)
+            *_first++ = wt::move(*next);
+    }
+    wt::move(aux, aux + index, _first);
+    delete[] aux;
+
+    return _first;
+}
+
+//  Time Complexity: NlogN
+//  Space Complexity: N
+template <typename BidirectionalIterator, typename UnaryPredicate>
+BidirectionalIterator
+_stable_partition_dispatch(BidirectionalIterator _first,
+                           BidirectionalIterator _last,
+                           UnaryPredicate _pred, wt::less_space)
+{
+    while(_first != _last && _pred(*_first))
+        ++_first;
+
+    if(_first == _last)
+        return _last;
+
+    BidirectionalIterator pivot;
+    BidirectionalIterator next = _first;
+    while(next != _last)
+    {
+        pivot = next;
+        while(++pivot != _last && !_pred(*pivot))
+            ;
+        if(pivot == _last)
+            return _first;
+
+        next = pivot;
+        while(++next != _last && _pred(*next))
+            ;
+        _first = wt::rotate(_first, pivot, next);
+    }
+    return _first;
+}
+
+template <typename BidirectionalIterator, typename UnaryPredicate,
+          typename Policy = wt::less_time>
+inline BidirectionalIterator
+stable_partition(BidirectionalIterator _first, BidirectionalIterator _last,
+                 UnaryPredicate _pred, Policy _p = Policy())
+{
+    return wt::_stable_partition_dispatch(_first, _last, _pred, _p);
+}
 
 
+////////////////////////
+// Sorting Operations //
+////////////////////////
 
+//  is_sort_until
+//  is_sort
+template <typename ForwardIterator>
+ForwardIterator
+is_sort_until(ForwardIterator _first, ForwardIterator _last)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator next = _first;
+    while(++next != _last && !(*next < *_first))
+        ++_first;
+    return next;
+}
+
+template <typename ForwardIterator, typename Compare>
+ForwardIterator
+is_sort_until(ForwardIterator _first, ForwardIterator _last, Compare _comp)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator next = _first;
+    while(++next != _last && !_comp(*next, *_first))
+        ++_first;
+    return next;
+}
+
+template <typename ForwardIterator>
+inline bool
+is_sort(ForwardIterator _first, ForwardIterator _last)
+{
+    return wt::is_sort_until(_first, _last) == _last;
+}
+
+template <typename ForwardIterator, typename Compare>
+inline bool
+is_sort(ForwardIterator _first, ForwardIterator _last, Compare _comp)
+{
+    return wt::is_sort_until(_first, _last, _comp) == _last;
+}
+
+//  sort
+//  TODO
+
+//  partial_sort
+//  partial_sort_copy
+template <typename RandomAccessIterator>
+void 
+partial_sort(RandomAccessIterator _first, RandomAccessIterator _mid, 
+             RandomAccessIterator _last)
+{
+    wt::make_heap(_first, _mid);
+
+    for(RandomAccessIterator iter = _mid; iter < _last; ++iter)
+    {
+        if(*iter < *_first)
+            wt::_pop_heap(_first, _mid, iter, _DIFFERENCE_TYPE(_first),
+                          wt::move(*iter));
+    }
+    wt::sort_heap(_first, _mid);
+}
+
+template <typename RandomAccessIterator, typename Compare>
+void
+partial_sort(RandomAccessIterator _first, RandomAccessIterator _mid,
+             RandomAccessIterator _last, Compare _comp)
+{
+    wt::make_heap(_first, _mid, _comp);
+
+    for(RandomAccessIterator iter = _mid; iter < _last; ++iter)
+    {
+        if(_comp(*iter, *_first))
+            wt::_pop_heap(_first, _mid, iter, _DIFFERENCE_TYPE(_first),
+                          wt::move(*iter));
+    }
+    wt::sort_heap(_first, _mid, _comp);
+}
+
+template <typename InputIterator, typename RandomAccessIterator>
+RandomAccessIterator
+partial_sort_copy(InputIterator _first, InputIterator _last,
+                  RandomAccessIterator _dest_f, RandomAccessIterator _dest_l)
+{
+    if(_dest_f == _dest_l)
+        return _dest_l;
+
+    RandomAccessIterator current = _dest_f;
+    for(; _first != _last && current != _dest_l; ++_first, ++current)
+        *current = *_first;
+
+    wt::make_heap(_dest_f, current);
+    for(; _first != _last; ++_first)
+    {   
+        if(*_first < *_dest_f)
+            wt::_adjust_heap(_dest_f, decltype(_dest_f - _dest_l)(0),
+                             wt::distance(_dest_f, current), *_first);
+    }
+    wt::sort_heap(_dest_f, current);
+    return current;
+}
+
+template <typename InputIterator, typename RandomAccessIterator,
+          typename Compare>
+RandomAccessIterator
+partial_sort_copy(InputIterator _first, InputIterator _last,
+                  RandomAccessIterator _dest_f, RandomAccessIterator _dest_l,
+                  Compare _comp)
+{
+    if(_dest_f == _dest_l)
+        return _dest_l;
+
+    RandomAccessIterator current = _dest_f;
+    for(; _first != _last && current != _dest_l; ++_first, ++current)
+        *current = *_first;
+
+    wt::make_heap(_dest_f, current, _comp);
+    for(; _first != _last; ++_first)
+    {
+        if(_comp(*_first, *_dest_f))
+            wt::_adjust_heap(_dest_f, decltype(_dest_l - _dest_f)(0),
+                             wt::distance(_dest_f, current), *_first, _comp);
+    }
+    wt::sort_heap(_dest_f, current, _comp);
+    return current;
+}
+
+//  stable_sort
+//  TODO
+
+//  nth_element
+//  TODO
+
+//////////////////////////////////////////////////
+//  Binary Search Operations (On Sorted Ranges) //
+//////////////////////////////////////////////////
+
+//  lower_bound
+//  upper_bound
+//  equal_range
+template <typename ForwardIterator, typename T>
+ForwardIterator
+lower_bound(ForwardIterator _first, ForwardIterator _last, const T& _value)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator mid;
+    auto len = wt::distance(_first, _last);
+    while(len > 0)
+    {
+        mid = _first;
+        auto step = len / 2;
+        wt::advance(mid, step);
+        if(*mid < _value)
+        {
+            _first = ++mid;
+            len -= (step + 1);
+        }
+        else
+        {
+            len = step;
+        }
+    }
+    return _first;
+}
+
+template <typename ForwardIterator, typename T, typename Compare>
+ForwardIterator
+lower_bound(ForwardIterator _first, ForwardIterator _last, const T& _value,
+            Compare _comp)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator mid;
+    auto len = wt::distance(_first, _last);
+    while(len > 0)
+    {
+        mid = _first;
+        auto step = len / 2;
+        wt::advance(mid, step);
+        if(_comp(*mid, _value))
+        {
+            _first = ++mid;
+            len -= (step + 1);
+        }
+        else
+        {
+            len = step;
+        }
+    }
+    return _first;
+}
+
+template <typename ForwardIterator, typename T>
+ForwardIterator
+upper_bound(ForwardIterator _first, ForwardIterator _last, const T& _value)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator mid;
+    auto len = wt::distance(_first, _last);
+    while(len > 0)
+    {
+        mid = _first;
+        auto step = len / 2;
+        wt::advance(mid, step);
+        if(!(_value < *mid))
+        {
+            _first = ++mid;
+            len -= step + 1;
+        }
+        else
+        {
+            len = step;
+        }
+    }
+    return _first;
+}
+
+template <typename ForwardIterator, typename T, typename Compare>
+ForwardIterator
+upper_bound(ForwardIterator _first, ForwardIterator _last, const T& _value,
+            Compare _comp)
+{
+    if(_first == _last)
+        return _last;
+
+    ForwardIterator mid;
+    auto len = wt::distance(_first, _last);
+    while(len > 0)
+    {
+        mid = _first;
+        auto step = len / 2;
+        wt::advance(mid, step);
+        if(!_comp(_value, *mid))
+        {
+            _first = ++mid;
+            len -= step + 1;
+        }
+        else
+        {
+            len = step;
+        }
+    }
+    return _first;
+}
+
+template <typename ForwardIterator, typename T>
+inline wt::pair<ForwardIterator, ForwardIterator>
+equal_range(ForwardIterator _first, ForwardIterator _last, const T& _value)
+{
+    ForwardIterator e_first = wt::lower_bound(_first, _last, _value);
+    ForwardIterator e_last  = wt::upper_bound(e_first, _last, _value);
+    return wt::make_pair(e_first, e_last);
+}
+
+template <typename ForwardIterator, typename T, typename Compare>
+inline wt::pair<ForwardIterator, ForwardIterator>
+equal_range(ForwardIterator _first, ForwardIterator _last, const T& _value,
+            Compare _comp)
+{
+    ForwardIterator e_first = wt::lower_bound(_first, _last, _value, _comp);
+    ForwardIterator e_last  = wt::upper_bound(_first, _last, _value, _comp);
+    return wt::make_pair(e_first, e_last);
+}
+
+//  binary_search
+template <typename ForwardIterator, typename T>
+inline bool
+binary_search(ForwardIterator _first, ForwardIterator _last, const T& _value)
+{
+    _first = wt::lower_bound(_first, _last, _value);
+    return !(_first == _last) && !(_value < *_first);
+}
+
+template <typename ForwardIterator, typename T, typename Compare>
+inline bool
+binary_search(ForwardIterator _first, ForwardIterator _last, const T& _value,
+              Compare _comp)
+{
+    _first = wt::lower_bound(_first, _last, _value, _comp);
+    return !(_first == _last) && !_comp(_value, *_first);
+}
+
+//////////////////////////////////////
+// Set Operations(On Sorted Ranges) //
+//////////////////////////////////////
+
+//  merge
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator>
+OutputIterator
+merge(InputIterator1 _first1, InputIterator1 _last1,
+      InputIterator2 _first2, InputIterator2 _last2,
+      OutputIterator _dest)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(*_first2 < *_first1)
+            *_dest++ = *_first2++;
+        else
+            *_dest++ = *_first1++;
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
+
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator, typename Compare>
+OutputIterator
+merge(InputIterator1 _first1, InputIterator1 _last1,
+      InputIterator2 _first2, InputIterator2 _last2,
+      OutputIterator _dest, Compare _comp)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(_comp(*_first2, *_first1))
+            *_dest++ = *_first2++;
+        else
+            *_dest++ = *_first1++;
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
+
+//  inplace_sort
+//  TODO
+
+//  includes
+template <typename InputIterator1, typename InputIterator2>
+bool
+includes(InputIterator1 _first1, InputIterator1 _last1,
+         InputIterator2 _first2, InputIterator2 _last2)
+{
+    while(_first2 != _last2)
+    {
+        if(_first1 == _last1 || *_first2 < *_first1)
+            return false;
+        if(!(*_first1 < *_first2))
+            ++_first2;
+        ++_first1;
+    }
+    return true;
+}
+
+template <typename InputIterator1, typename InputIterator2,typename Compare>
+bool
+includes(InputIterator1 _first1, InputIterator1 _last1,
+         InputIterator2 _first2, InputIterator2 _last2,
+         Compare _comp)
+{
+    while(_first2 != _last2)
+    {
+        if(_first1 == _last1 || _comp(*_first2, *_first1))
+            return false;
+        if(!_comp(*_first1, *_first2))
+            ++_first2;
+        ++_first1;
+    }
+    return true;
+}
+
+//  set_difference
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator>
+OutputIterator
+set_difference(InputIterator1 _first1, InputIterator1 _last1,
+               InputIterator2 _first2, InputIterator2 _last2,
+               OutputIterator _dest)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(*_first1 < *_first2)
+        {
+            *_dest++ = *_first1;
+            ++_first1;
+        }
+        else if(*_first2 < *_first2)
+        {
+            ++_first2;
+        }
+        else
+        {
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _first1 == _last1 ? _dest : wt::copy(_first1, _last1, _dest);
+}
+
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator, typename Compare>
+OutputIterator
+set_difference(InputIterator1 _first1, InputIterator1 _last1,
+               InputIterator2 _first2, InputIterator2 _last2,
+               OutputIterator _dest, Compare _comp)
+
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(_comp(*_first1, *_first2))
+        {
+            *_dest++ = *_first1;
+            ++_first1;
+        }
+        else if(_comp(*_first2, *_first1))
+        {
+            ++_first2;
+        }
+        else
+        {
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _first1 == _last1 ? _dest : wt::copy(_first1, _last1, _dest);
+}
+
+//  set_intersection
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator>
+OutputIterator
+set_intersection(InputIterator1 _first1, InputIterator1 _last1,
+                 InputIterator2 _first2, InputIterator2 _last2,
+                 OutputIterator _dest)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(*_first1 < *_first2)
+            ++_first1;
+        else if(*_first2 < *_first1)
+            ++_first2;
+        else
+        {
+            *_dest++ = *_first1;
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _dest;
+}
+
+template <typename InputIterator1, typename InputIterator2, 
+          typename OutputIterator, typename Compare>
+OutputIterator
+set_intersection(InputIterator1 _first1, InputIterator1 _last1,
+                 InputIterator2 _first2, InputIterator2 _last2,
+                 OutputIterator _dest, Compare _comp)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(_comp(*_first1, *_first2))
+            ++_first1;
+        else if(_comp(*_first2, *_first1))
+            ++_first2;
+        else
+        {
+            *_dest++ = *_first1;
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _dest;
+}
+
+//  set_symmetric_difference
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator>
+OutputIterator
+set_symmetric_difference(InputIterator1 _first1, InputIterator1 _last1,
+                         InputIterator2 _first2, InputIterator2 _last2,
+                         OutputIterator _dest)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(*_first1 < *_first2)
+            *_dest++ = *_first1++;
+        else if(*_first2 < *_first1)
+            *_dest++ = *_first2++;
+        else
+        {
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
+
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator, typename Compare>
+OutputIterator
+set_symmetric_difference(InputIterator1 _first1, InputIterator1 _last1,
+                         InputIterator2 _first2, InputIterator2 _last2,
+                         OutputIterator _dest, Compare _comp)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(_comp(*_first1, *_first2))
+            *_dest++ = *_first1++;
+        else if(_comp(*_first2, *_first1))
+            *_dest++ = *_first2++;
+        else
+        {
+            ++_first1;
+            ++_first2;
+        }
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
+
+//  set_union
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator>
+OutputIterator
+set_union(InputIterator1 _first1, InputIterator1 _last1,
+          InputIterator2 _first2, InputIterator2 _last2,
+          OutputIterator _dest)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(*_first2 < *_first1)
+            *_dest++ = *_first2++;
+        else
+        {
+            if(!(*_first1 < *_first2))
+                ++_first2;
+            *_dest++ = *_first1++;
+        }
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
+
+template <typename InputIterator1, typename InputIterator2,
+          typename OutputIterator, typename Compare>
+OutputIterator
+set_union(InputIterator1 _first1, InputIterator1 _last1,
+          InputIterator2 _first2, InputIterator2 _last2,
+          OutputIterator _dest, Compare _comp)
+{
+    while(_first1 != _last1 && _first2 != _last2)
+    {
+        if(_comp(*_first2, *_first1))
+            *_dest++ = *_first2++;
+        else
+        {
+            if(!_comp(*_first1, *_first2))
+                ++_first2;
+            *_dest++ = *_first1++;
+        }
+    }
+    return _first1 == _last1 ? wt::copy(_first2, _last2, _dest)
+            : wt::copy(_first1, _last1, _dest);
+}
 
 
 } // namespace wt
