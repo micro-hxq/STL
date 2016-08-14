@@ -1635,8 +1635,8 @@ deque<T, Allocator>::emplace_back(Args&&... args)
 // Non-member functions //
 //////////////////////////
 template <typename T, typename Allocator>
-inline bool operator==(const deque<T, Allocator>& lhs,
-                       const deque<T, Allocator>& rhs)
+inline bool operator==(const wt::deque<T, Allocator>& lhs,
+                       const wt::deque<T, Allocator>& rhs)
 {
     return lhs.size() == rhs.size() &&
             wt::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
@@ -1645,43 +1645,43 @@ inline bool operator==(const deque<T, Allocator>& lhs,
 }
 
 template <typename T, typename Allocator>
-inline bool operator!=(const deque<T, Allocator>& lhs,
-                       const deque<T, Allocator>& rhs)
+inline bool operator!=(const wt::deque<T, Allocator>& lhs,
+                       const wt::deque<T, Allocator>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator<(const deque<T, Allocator>& lhs,
-                      const deque<T, Allocator>& rhs)
+inline bool operator<(const wt::deque<T, Allocator>& lhs,
+                      const wt::deque<T, Allocator>& rhs)
 {
     return wt::lexicographical_compare(lhs.cbegin(), lhs.cend(),
                                        rhs.cbegin(), rhs.cend());
 }
 
 template <typename T, typename Allocator>
-inline bool operator<=(const deque<T, Allocator>& lhs,
-                       const deque<T, Allocator>& rhs)
+inline bool operator<=(const wt::deque<T, Allocator>& lhs,
+                       const wt::deque<T, Allocator>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator>(const deque<T, Allocator>& lhs,
-                      const deque<T, Allocator>& rhs)
+inline bool operator>(const wt::deque<T, Allocator>& lhs,
+                      const wt::deque<T, Allocator>& rhs)
 {
     return rhs < lhs;
 }
 
 template <typename T, typename Allocator>
-inline bool operator>=(const deque<T, Allocator>& lhs,
-                       const deque<T, Allocator>& rhs)
+inline bool operator>=(const wt::deque<T, Allocator>& lhs,
+                       const wt::deque<T, Allocator>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template <typename T, typename Allocator>
-void swap(deque<T, Allocator>& lhs, deque<T,Allocator>& rhs)
+void swap(wt::deque<T, Allocator>& lhs, wt::deque<T,Allocator>& rhs)
 {
     lhs.swap(rhs);
 }

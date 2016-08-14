@@ -43,9 +43,9 @@ protected:
 };
 
 template <typename Container>
-back_insert_iterator<Container> back_inserter(Container& c)
+wt::back_insert_iterator<Container> back_inserter(Container& c)
 {
-    return back_insert_iterator<Container>(c);
+    return wt::back_insert_iterator<Container>(c);
 }
 
 template <typename Container>
@@ -89,9 +89,9 @@ private:
 };
 
 template <typename Container>
-front_insert_iterator<Container> front_inserter(Container& c)
+wt::front_insert_iterator<Container> front_inserter(Container& c)
 {
-    return front_insert_iterator<Container>(c);
+    return wt::front_insert_iterator<Container>(c);
 }
 
 template <typename Container>
@@ -138,9 +138,9 @@ private:
 };
 
 template <typename Container>
-insert_iterator<Container> inserter(Container& c,typename Container::iterator iter)
+wt::insert_iterator<Container> inserter(Container& c,typename Container::iterator iter)
 {
-    return insert_iterator<Container>(c,iter);
+    return wt::insert_iterator<Container>(c,iter);
 }
 
 template <typename Iterator>
@@ -242,65 +242,65 @@ private:
 };
 
 template <typename Iterator>
-reverse_iterator<Iterator> make_reverse_iterator(Iterator iter)
+wt::reverse_iterator<Iterator> make_reverse_iterator(Iterator iter)
 {
-    return reverse_iterator<Iterator>(iter);
+    return wt::reverse_iterator<Iterator>(iter);
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator==(const reverse_iterator<Iterator1>& lhs,
-                       const reverse_iterator<Iterator2>& rhs)
+inline bool operator==(const wt::reverse_iterator<Iterator1>& lhs,
+                       const wt::reverse_iterator<Iterator2>& rhs)
 {
     return lhs.base() == rhs.base();
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator!=(const reverse_iterator<Iterator1>& lhs,
-                       const reverse_iterator<Iterator2>& rhs)
+inline bool operator!=(const wt::reverse_iterator<Iterator1>& lhs,
+                       const wt::reverse_iterator<Iterator2>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator<(const reverse_iterator<Iterator1>& lhs,
-                      const reverse_iterator<Iterator2>& rhs)
+inline bool operator<(const wt::reverse_iterator<Iterator1>& lhs,
+                      const wt::reverse_iterator<Iterator2>& rhs)
 {
     return lhs.base() < rhs.base();
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator>(const reverse_iterator<Iterator1>& lhs,
-                      const reverse_iterator<Iterator2>& rhs)
+inline bool operator>(const wt::reverse_iterator<Iterator1>& lhs,
+                      const wt::reverse_iterator<Iterator2>& rhs)
 {
     return rhs < lhs;
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator<=(const reverse_iterator<Iterator1>& lhs,
-                       const reverse_iterator<Iterator2>& rhs)
+inline bool operator<=(const wt::reverse_iterator<Iterator1>& lhs,
+                       const wt::reverse_iterator<Iterator2>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template <typename Iterator1, typename Iterator2>
-inline bool operator>=(const reverse_iterator<Iterator1>& lhs,
-                       const reverse_iterator<Iterator2>& rhs)
+inline bool operator>=(const wt::reverse_iterator<Iterator1>& lhs,
+                       const wt::reverse_iterator<Iterator2>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template <typename Iterator>
-inline typename reverse_iterator<Iterator>::difference_type operator-(
-                    const reverse_iterator<Iterator>& lhs,
-                    const reverse_iterator<Iterator>& rhs)
+inline typename wt::reverse_iterator<Iterator>::difference_type 
+operator-(const wt::reverse_iterator<Iterator>& lhs,
+          const wt::reverse_iterator<Iterator>& rhs)
 {
     return rhs.base() - lhs.base();
 }
 
 template <typename Iterator>
-inline reverse_iterator<Iterator> operator+(
-                    typename reverse_iterator<Iterator>::difference_type n,
-                    reverse_iterator<Iterator> iter)
+inline wt::reverse_iterator<Iterator> 
+operator+(typename wt::reverse_iterator<Iterator>::difference_type n,
+          wt::reverse_iterator<Iterator> iter)
 {
     return iter + n;
 }

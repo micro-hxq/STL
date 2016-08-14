@@ -4,7 +4,7 @@
 namespace wt {
 
 template <typename T, typename Container = wt::vector<T>,
-          typename Compare = wt::less<typename Container::value_type>>
+        typename Compare = wt::default_order_t<typename Container::value_type>>
 class priority_queue {
 public: 
     typedef Container                           container_type;

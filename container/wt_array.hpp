@@ -197,60 +197,60 @@ private:
 };
 
 template <typename T, std::size_t N>
-bool operator==(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator==(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return wt::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <typename T, std::size_t N>
-bool operator<(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator<(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return wt::lexicographical_compare(lhs.begin(), lhs.end(),
                                        rhs.begin(), rhs.end());
 }
 
 template <typename T, std::size_t N>
-bool operator!=(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator!=(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template <typename T, std::size_t N>
-bool operator<=(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator<=(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template <typename T, std::size_t N>
-bool operator>(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator>(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return rhs < lhs;
 }
 
 template <typename T, std::size_t N>
-bool operator>=(const array<T, N>& lhs, const array<T, N>& rhs)
+bool operator>=(const wt::array<T, N>& lhs, const wt::array<T, N>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template <typename T, std::size_t N>
-void swap(array<T, N>& lhs, array<T, N>& rhs)
+void swap(wt::array<T, N>& lhs, wt::array<T, N>& rhs)
 {
     lhs.swap(rhs);
 }
 
 template <std::size_t Index, typename T, std::size_t N>
-constexpr T& get(array<T, N>& _arr) noexcept
+constexpr T& get(wt::array<T, N>& _arr) noexcept
 {
     static_assert(Index < N, "index is out of range");
-    return array_traits<T, N>::ref(_arr.m_array_, Index);
+    return wt::array_traits<T, N>::ref(_arr.m_array_, Index);
 }
 
 template <std::size_t Index, typename T, std::size_t N>
-constexpr const T& get(const array<T, N>& _arr) noexcept
+constexpr const T& get(const wt::array<T, N>& _arr) noexcept
 {
     static_assert(Index < N, "index is out of range");
-    return array_traits<T, N>::ref(_arr.m_array_, Index);
+    return wt::array_traits<T, N>::ref(_arr.m_array_, Index);
 }
 
 // TODO: overload for rvalue

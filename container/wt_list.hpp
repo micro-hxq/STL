@@ -871,44 +871,44 @@ void list<T, Allocator>::sort(Compare _comp)
 }
 
 template <typename T, typename Allocator>
-bool operator==(const list<T, Allocator>& lhs, const list<T,Allocator>& rhs)
+bool operator==(const wt::list<T, Allocator>& lhs, const wt::list<T,Allocator>& rhs)
 {
     return wt::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
 }
 
 template <typename T, typename Allocator>
-inline bool operator<(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs)
+inline bool operator<(const wt::list<T, Allocator>& lhs, const wt::list<T, Allocator>& rhs)
 {
     return wt::lexicographical_compare(lhs.cbegin(), lhs.cend(),
                                        rhs.cbegin(), rhs.cend());
 }
 
 template <typename T, typename Allocator>
-inline bool operator!=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs)
+inline bool operator!=(const wt::list<T, Allocator>& lhs, const wt::list<T, Allocator>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator>(const list<T, Allocator>& lhs, const list<T,Allocator>& rhs)
+inline bool operator>(const wt::list<T, Allocator>& lhs, const wt::list<T,Allocator>& rhs)
 {
     return rhs < lhs;
 }
 
 template <typename T, typename Allocator>
-inline bool operator<=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs)
+inline bool operator<=(const wt::list<T, Allocator>& lhs, const wt::list<T, Allocator>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator>=(const list<T, Allocator>& lhs, const list<T, Allocator>& rhs)
+inline bool operator>=(const wt::list<T, Allocator>& lhs, const wt::list<T, Allocator>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template <typename T, typename Allocator>
-void swap(list<T, Allocator>& lhs, list<T, Allocator>& rhs)
+void swap(wt::list<T, Allocator>& lhs, wt::list<T, Allocator>& rhs)
 {
     lhs.swap(rhs);
 }

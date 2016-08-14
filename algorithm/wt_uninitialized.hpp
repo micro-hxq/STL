@@ -20,7 +20,7 @@ inline ForwardIterator
 _uninitialized_copy_aux(InputIterator _first, InputIterator _last,
                         ForwardIterator _result, true_type)
 {
-    return copy(_first, _last, _result);
+    return wt::copy(_first, _last, _result);
 }
 
 template <typename InputIterator, typename ForwardIterator>
@@ -36,7 +36,7 @@ _uninitialized_copy_aux(InputIterator _first, InputIterator _last,
         }
     }
     catch(...) {
-        destroy(_result, _current);
+        wt::destroy(_result, _current);
         throw;
     }
     return _current;
@@ -47,14 +47,14 @@ inline ForwardIterator
 _uninitialized_copy(InputIterator _first, InputIterator _last,
                     ForwardIterator _result, T*)
 {
-    return _uninitialized_copy_aux(_first, _last, _result, is_pod<T>());
+    return wt::_uninitialized_copy_aux(_first, _last, _result, is_pod<T>());
 }
 
 template <typename InputIterator, typename ForwardIterator>
 inline ForwardIterator
 uninitialized_copy(InputIterator _first, InputIterator _last, ForwardIterator _result)
 {
-    return _uninitialized_copy(_first, _last, _result, _VALUE_TYPE(_result));
+    return wt::_uninitialized_copy(_first, _last, _result, _VALUE_TYPE(_result));
 }
 
 inline char* uninitialized_copy(const char* _first, const char* _last,
@@ -75,7 +75,7 @@ inline wchar_t* uninitialized_copy(const wchar_t* _first, const wchar_t* _last,
 // uninitialized_copy_n //
 //////////////////////////
 template <typename InputIterator, typename Size, typename ForwardIterator>
-pair<InputIterator, ForwardIterator>
+wt::pair<InputIterator, ForwardIterator>
 _uninitialized_copy_n(InputIterator _first, Size _count,
                       ForwardIterator _result, input_iterator_tag)
 {
@@ -83,32 +83,32 @@ _uninitialized_copy_n(InputIterator _first, Size _count,
     try{
         for(; _count > 0; ++_first, ++_current, --_count)
         {
-            construct(&*_current, *_first);
+            wt::construct(&*_current, *_first);
         }
     }
     catch(...){
-        destroy(_result, _current);
+        wt::destroy(_result, _current);
         throw;
     }
-    return pair<InputIterator, ForwardIterator>(_first,_current);
+    return wt::pair<InputIterator, ForwardIterator>(_first,_current);
 }
 
 template <typename RandomAccessIterator, typename Size, typename ForwardIterator>
-inline pair<RandomAccessIterator, ForwardIterator>
+inline wt::pair<RandomAccessIterator, ForwardIterator>
 _uninitialized_copy_n(RandomAccessIterator _first, Size _count,
                       ForwardIterator _result, random_access_iterator_tag)
 {
     RandomAccessIterator _last = _first + _count;
-    return pair<RandomAccessIterator, ForwardIterator>(_last,
-                    uninitialized_copy(_first, _last, _result));
+    return wt::pair<RandomAccessIterator, ForwardIterator>(_last,
+                    wt::uninitialized_copy(_first, _last, _result));
 }
 
 template <typename InputIterator, typename Size, typename ForwardIterator>
-inline pair<InputIterator, ForwardIterator>
+inline wt::pair<InputIterator, ForwardIterator>
 uninitialized_copy_n(InputIterator _first, Size _count, ForwardIterator _result)
 {
-    return _uninitialized_copy_n(_first, _count, _result,
-                                 _ITERATOR_CATEGORY(_first));
+    return wt::_uninitialized_copy_n(_first, _count, _result,
+                                     _ITERATOR_CATEGORY(_first));
 }
 
 ////////////////////////
@@ -118,7 +118,7 @@ template <typename ForwardIterator, typename T>
 inline void _uninitialized_fill_aux(ForwardIterator _first, ForwardIterator _last, 
                                 const T& _value, true_type)
 {
-    fill(_first, _last, _value);
+    wt::fill(_first, _last, _value);
 }
 
 template <typename ForwardIterator, typename T>
@@ -129,11 +129,11 @@ void _uninitialized_fill_aux(ForwardIterator _first, ForwardIterator _last,
     try{
         for(; _current != _last; ++_current)
         {
-            construct(&*_current, _value);
+            wt::construct(&*_current, _value);
         }
     }
     catch(...){
-        destroy(_first, _current);
+        wt::destroy(_first, _current);
         throw;
     }
 }
@@ -142,14 +142,14 @@ template <typename ForwardIterator, typename T, typename U>
 inline void _uninitialized_fill(ForwardIterator _first, ForwardIterator _last,
                                 const T& _value, U*)
 {
-    _uninitialized_fill_aux(_first, _last, _value, is_pod<U>());
+    wt::_uninitialized_fill_aux(_first, _last, _value, wt::is_pod<U>());
 }
 
 template <typename ForwardIterator, typename T>
 inline void uninitialized_fill(ForwardIterator _first, ForwardIterator _last,
                                const T& _value)
 {
-    _uninitialized_fill(_first, _last, _value, _VALUE_TYPE(_first));
+    wt::_uninitialized_fill(_first, _last, _value, _VALUE_TYPE(_first));
 }
 
 //////////////////////////
@@ -160,7 +160,7 @@ inline ForwardIterator
 _uninitialized_fill_n_aux(ForwardIterator _first, Size _count,
                           const T& _value, true_type)
 {
-    return fill_n(_first, _count, _value);
+    return wt::fill_n(_first, _count, _value);
 }
 
 template <typename ForwardIterator, typename Size, typename T>
@@ -172,11 +172,11 @@ _uninitialized_fill_n_aux(ForwardIterator _first, Size _count,
     try{
         for(; _count > 0; ++_current, --_count)
         {
-            construct(&*_current, _value);
+            wt::construct(&*_current, _value);
         }
     }
     catch(...){
-        destroy(_first, _current);
+        wt::destroy(_first, _current);
         throw;
     }
     return _current;
@@ -187,14 +187,16 @@ inline ForwardIterator
 _uninitialized_fill_n(ForwardIterator _first, Size _count,
                       const T& _value, U*)
 {
-    return _uninitialized_fill_n_aux(_first, _count, _value, is_pod<U>());
+    return wt::_uninitialized_fill_n_aux(_first, _count, _value, 
+                                         wt::is_pod<U>());
 }
 
 template <typename ForwardIterator, typename Size, typename T>
 inline ForwardIterator
 uninitialized_fill_n(ForwardIterator _first, Size _count, const T& _value)
 {
-    return _uninitialized_fill_n(_first, _count, _value, _VALUE_TYPE(_first));
+    return wt::_uninitialized_fill_n(_first, _count, _value, 
+                                     _VALUE_TYPE(_first));
 }
 
 } // namespace wt

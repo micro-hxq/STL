@@ -2,13 +2,14 @@
 #define _WT_ALGORITHM_HPP_
 
 #include <string.h>
+#include <initializer_list>
 
 #include "type_traits.hpp"
-
-#include "iterator/wt_iterator_base.hpp"
-#include "iterator/wt_iterator.hpp"
-
 #include "utility.hpp"
+
+#include "iterator.hpp"
+#include "allocator.hpp"
+
 
 
 #include "algorithm/wt_algo_base.hpp"

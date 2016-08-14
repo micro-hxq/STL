@@ -960,51 +960,51 @@ void forward_list<T, Allocator>::sort(Compare _comp)
  *  Non-member functions
  */
 template <typename T, typename Allocator>
-inline bool operator==(const forward_list<T, Allocator>& lhs,
-                       const forward_list<T, Allocator>& rhs)
+inline bool operator==(const wt::forward_list<T, Allocator>& lhs,
+                       const wt::forward_list<T, Allocator>& rhs)
 {
     return wt::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename T, typename Allocator>
-inline bool operator<(const forward_list<T, Allocator>& lhs,
-                      const forward_list<T, Allocator>& rhs)
+inline bool operator<(const wt::forward_list<T, Allocator>& lhs,
+                      const wt::forward_list<T, Allocator>& rhs)
 {
     return wt::lexicographical_compare(lhs.begin(), lhs.end(),
                                        rhs.begin(), rhs.end());
 }
 
 template <typename T, typename Allocator>
-inline bool operator!=(const forward_list<T, Allocator>& lhs,
-                       const forward_list<T, Allocator>& rhs)
+inline bool operator!=(const wt::forward_list<T, Allocator>& lhs,
+                       const wt::forward_list<T, Allocator>& rhs)
 {
     return !(lhs == rhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator<=(const forward_list<T, Allocator>& lhs,
-                       const forward_list<T, Allocator>& rhs)
+inline bool operator<=(const wt::forward_list<T, Allocator>& lhs,
+                       const wt::forward_list<T, Allocator>& rhs)
 {
     return !(rhs < lhs);
 }
 
 template <typename T, typename Allocator>
-inline bool operator>(const forward_list<T, Allocator>& lhs,
-                      const forward_list<T, Allocator>& rhs)
+inline bool operator>(const wt::forward_list<T, Allocator>& lhs,
+                      const wt::forward_list<T, Allocator>& rhs)
 {
     return rhs < lhs;
 }
 
 template <typename T, typename Allocator>
-inline bool operator>=(const forward_list<T, Allocator>& lhs,
-                       const forward_list<T, Allocator>& rhs)
+inline bool operator>=(const wt::forward_list<T, Allocator>& lhs,
+                       const wt::forward_list<T, Allocator>& rhs)
 {
     return !(lhs < rhs);
 }
 
 template <typename T, typename Allocator>
-inline void swap(forward_list<T, Allocator>& lhs,
-                 forward_list<T, Allocator>& rhs)
+inline void swap(wt::forward_list<T, Allocator>& lhs,
+                 wt::forward_list<T, Allocator>& rhs)
 {
     lhs.swap(rhs);
 }
