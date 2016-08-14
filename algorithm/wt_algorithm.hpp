@@ -1669,6 +1669,391 @@ set_union(InputIterator1 _first1, InputIterator1 _last1,
             : wt::copy(_first1, _last1, _dest);
 }
 
+////////////////////////////////
+// Minimum/Maximum Operations //
+////////////////////////////////
+
+//  max_element
+//  min_element
+template <typename ForwardIterator>
+constexpr ForwardIterator
+max_element(ForwardIterator _first, ForwardIterator _last)
+{
+    if(_first == _last)
+        return _last;
+    ForwardIterator largest = _first;
+    while(++_first != _last)
+    {
+        if(*largest < *_first)
+            largest = _first;
+    }
+    return largest;
+}
+
+template <typename ForwardIterator, typename Compare>
+constexpr ForwardIterator
+max_element(ForwardIterator _first, ForwardIterator _last, Compare _comp)
+{
+    if(_first == _last)
+        return _last;
+    ForwardIterator largest = _first;
+    while(++_first != _last)
+    {
+        if(_comp(*largest, *_first))
+            largest = _first;
+    }
+    return largest;
+}
+
+template <typename ForwardIterator>
+constexpr ForwardIterator
+min_element(ForwardIterator _first, ForwardIterator _last)
+{
+    if(_first == _last)
+        return _last;
+    ForwardIterator smallest = _first;
+    while(++_first != _last)
+    {
+        if(*_first < *smallest)
+            smallest = _first;
+    }
+    return smallest;
+}
+
+template <typename ForwardIterator, typename Compare>
+constexpr ForwardIterator
+min_element(ForwardIterator _first, ForwardIterator _last, Compare _comp)
+{
+    if(_first == _last)
+        return _last;
+    ForwardIterator smallest = _first;
+    while(++_first != _last)
+    {
+        if(_comp(*_first, *smallest))
+            smallest = _first;
+    }
+    return smallest;
+}
+
+//  max
+//  min
+template <typename T>
+constexpr T
+max(std::initializer_list<T> _il)
+{
+    return *wt::max_element(_il.begin(), _il.end());
+}
+
+template <typename T, typename Compare>
+constexpr T
+max(std::initializer_list<T> _il, Compare _comp)
+{
+    return wt::max_element(_il.begin(), _il.end(), _comp);
+}
+
+template <typename T>
+constexpr T
+min(std::initializer_list<T> _il)
+{
+    return *wt::min_element(_il.begin(), _il.end());
+}
+
+template <typename T, typename Compare>
+constexpr T
+min(std::initializer_list<T> _il, Compare _comp)
+{
+    return *wt::min_element(_il.begin(), _il.end(), _comp);
+}
+
+//  minmax_element
+template <typename ForwardIterator>
+constexpr wt::pair<ForwardIterator, ForwardIterator>
+minmax_element(ForwardIterator _first, ForwardIterator _last)
+{
+    if(_first == _last)
+        return wt::make_pair(_first, _first);
+    ForwardIterator largest = _first;
+    ForwardIterator smallest = _first;
+    while(++_first != _last)
+    {
+        if(*_first < *smallest)
+            smallest = _first;
+        else if(!(*_first < *largest))
+            largest = _first;
+    }
+    return wt::make_pair(smallest, largest);
+}
+
+template <typename ForwardIterator, typename Compare>
+constexpr wt::pair<ForwardIterator, ForwardIterator>
+minmax_element(ForwardIterator _first, ForwardIterator _last, Compare _comp)
+{
+    if(_first == _last)
+        return wt::make_pair(_first, _first);
+    ForwardIterator largest = _first;
+    ForwardIterator smallest = _first;
+    while(++_first != _last)
+    {
+        if(_comp(*_first, *smallest))
+            smallest = _first;
+        else if(!_comp(*_first, *largest))
+            largest = _first;
+    }
+    return wt::make_pair(smallest, largest);
+}
+
+//  minmax
+template <typename T>
+constexpr wt::pair<const T&, const T&>
+minmax(const T& _a, const T& _b)
+{
+    return _b < _a ? wt::make_pair(_b, _a) : wt::make_pair(_a, _b);
+}
+
+template <typename T, typename Compare>
+constexpr wt::pair<const T&, const T&>
+minmax(const T& _a, const T& _b, Compare _comp)
+{
+    return _comp(_b, _a) ? wt::make_pair(_b, _a) : wt::make_pair(_a, _b);
+}
+
+template <typename T>
+constexpr wt::pair<T, T>
+minmax(std::initializer_list<T> _il)
+{
+    auto result = wt::minmax_element(_il.begin(), _il.end());
+    return wt::make_pair(*result.first, *result.second);
+}
+
+template <typename T, typename Compare>
+constexpr wt::pair<T, T>
+minmax(std::initializer_list<T> _il, Compare _comp)
+{
+    auto result = wt::minmax_element(_il.begin(), _il.end(), _comp);
+    return wt::make_pair(*result.first, *result.second);
+}
+
+//  clamp
+template <typename T>
+constexpr const T&
+clamp(const T& _value, const T& _low, const T& _high)
+{
+    return _value < _low ? _low
+            : (_high < _value ? _high : _value);
+}
+
+template <typename T, typename Compare>
+constexpr const T& 
+clamp(const T& _value, const T& _low, const T& _high, Compare _comp)
+{
+    return _comp(_value, _low) ? _low 
+            : (_comp(_high, _value) ? _high : _value);
+}
+
+//  is_permutation
+template <typename ForwardIterator1, typename ForwardIterator2>
+bool
+is_permutation(ForwardIterator1 _first1, ForwardIterator1 _last1,
+               ForwardIterator2 _first2)
+{
+    auto result = wt::mismatch(_first1, _last1, _first2);
+    _first1 = result.first;
+    _first2 = result.second;
+    if(_first1 != _last1)
+    {
+        ForwardIterator2 _last2 = _first2;
+        wt::advance(_last2, wt::distance(_first1, _last1));
+        for(ForwardIterator1 current = _first1; current != _last1; ++current)
+        {
+            if(current == wt::find(_first1, current, *current))
+            {
+                auto n = wt::count(_first2, _last2, *current);
+                if(n == 0 || n != wt::count(current, _last1, *current))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2,
+          typename BinaryPredicate>
+bool
+is_permutation(ForwardIterator1 _first1, ForwardIterator1 _last1,
+               ForwardIterator2 _first2, BinaryPredicate _pred)
+{
+    auto result = wt::mismatch(_first1, _last1, _first2, _pred);
+    _first1 = result.first;
+    _first2 = result.second;
+    if(_first1 != _last1)
+    {
+        ForwardIterator2 _last2 = _first2;
+        wt::advance(_last2, wt::distance(_first1, _last1));
+        for(ForwardIterator1 current = _first1; current != _last1; ++current)
+        {
+            auto p = [_pred, current](const auto& val) 
+                     { return _pred(val, *current); };
+            if(current == wt::find_if(_first1, current, p))
+            {
+                auto n = wt::count_if(_first2, _last2, p);
+                if(n == 0 || n != wt::count_if(current, _last1, p))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2>
+bool 
+is_permutation(ForwardIterator1 _first1, ForwardIterator1 _last1,
+               ForwardIterator2 _first2, ForwardIterator2 _last2)
+{
+    if(wt::distance(_first1, _last1) != wt::distance(_first2, _last2))
+        return false;
+    return wt::is_permutation(_first1, _last1, _first2);
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2,
+          typename BinaryPredicate>
+bool
+is_permutation(ForwardIterator1 _first1, ForwardIterator1 _last1,
+               ForwardIterator2 _first2, ForwardIterator2 _last2,
+               BinaryPredicate _pred)
+{
+    if(wt::distance(_first1, _last1) != wt::distance(_first2, _last2))
+        return false;
+    return wt::is_permutation(_first1, _last1, _first2, _pred);
+}
+
+//  next_permutation
+template <typename BidirectionalIterator>
+bool
+next_permutation(BidirectionalIterator _first, BidirectionalIterator _last)
+{
+    if(_first == _last)
+        return false;
+    BidirectionalIterator sp1 = _last;
+    if(_first == --sp1)
+        return false;
+
+    while(true)
+    {
+        BidirectionalIterator rs = sp1;
+        if(*--sp1 < *rs)
+        {
+            BidirectionalIterator sp2 = _last;
+            while(!(*sp1 < *--sp2))
+                ;
+            wt::iter_swap(sp1, sp2);
+            wt::reverse(rs, _last);
+            return true;
+        }
+        if(sp1 == _first)
+        {
+            wt::reverse(_first, _last);
+            return false;
+        }
+    }
+}
+
+template <typename BidirectionalIterator, typename Compare>
+bool
+next_permutation(BidirectionalIterator _first, BidirectionalIterator _last,
+                 Compare _comp)
+{
+    if(_first == _last)
+        return false;
+    BidirectionalIterator sp1 = _last;
+    if(_first == --sp1)
+        return false;
+
+    while(true)
+    {
+        BidirectionalIterator rs = sp1;
+        if(_comp(*--sp1, *rs))
+        {
+            BidirectionalIterator sp2 = _last;
+            while(!_comp(*sp1, *--sp2))
+                ;
+            wt::iter_swap(sp1, sp2);
+            wt::reverse(rs, _last);
+            return true;
+        }
+        if(sp1 == _first)
+        {
+            wt::reverse(_first, _last);
+            return false;
+        }
+    }
+}
+
+//  prev_permutation
+template <typename BidirectionalIterator>
+bool
+prev_permutation(BidirectionalIterator _first, BidirectionalIterator _last)
+{
+    if(_first == _last)
+        return false;
+    BidirectionalIterator sp1 = _last;
+    if(_first == --sp1)
+        return false;
+
+    while(true)
+    {
+        BidirectionalIterator rs = sp1;
+        if(*rs < *--sp1)
+        {
+            BidirectionalIterator sp2 = _last;
+            while(!(*--sp2 < *sp1))
+                ;
+            wt::iter_swap(sp1, sp2);
+            wt::reverse(rs, _last);
+            return true;
+        }
+        if(sp1 == _first)
+        {
+            wt::reverse(_first, _last);
+            return false;
+        }
+    }
+}
+
+template <typename BidirectionalIterator, typename Compare>
+bool
+prev_permutation(BidirectionalIterator _first, BidirectionalIterator _last,
+                 Compare _comp)
+{
+    if(_first == _last)
+        return false;
+    BidirectionalIterator sp1 = _last;
+    if(_first == --sp1)
+        return false;
+
+    while(true)
+    {
+        BidirectionalIterator rs = sp1;
+        if(_comp(*rs, *--sp1))
+        {
+            BidirectionalIterator sp2 = _last;
+            while(!_comp(*--sp2, *sp1))
+                ;
+            wt::iter_swap(sp1, sp2);
+            wt::reverse(rs, _last);
+            return true;
+        }
+        if(sp1 == _first)
+        {
+            wt::reverse(_first, _last);
+            return false;
+        }
+    }
+}
+
+
+
+
+
 
 } // namespace wt
 #endif
