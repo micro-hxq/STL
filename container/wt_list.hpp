@@ -542,7 +542,7 @@ protected:
             wt::construct(&temp->data_, _value);
         }
         catch(...) {
-            wt::destroy(&temp->data_);
+            // wt::destroy(&temp->data_);
             _put_node(temp);
             throw;
         }
@@ -555,7 +555,7 @@ protected:
             wt::construct(&temp->data_);
         }
         catch(...) {
-            wt::destroy(&temp->data_);
+            // wt::destroy(&temp->data_);
             _put_node(temp);
             throw;
         }

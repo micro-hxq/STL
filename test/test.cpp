@@ -13,6 +13,8 @@
 #include "../array.hpp"
 #include "../forward_list.hpp"
 
+#include "../container/wt_rb_tree.hpp"
+
 #include <iostream>
 
 

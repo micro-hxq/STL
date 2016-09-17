@@ -3,8 +3,32 @@
 
 namespace wt{
 
+/**
+ *  Internal Implementation
+ */
+template <typename T>
+struct _Identity {
+    const T& operator()(const T& _value) const
+    {
+        return _value;
+    }
+};
 
+template <typename Pair>
+struct _Pair1st {
+    const typename Pair::first_type& operator()(const Pair& _value) const
+    {
+        return _value.first;
+    }
+};
 
+template <typename Pair>
+struct _Pair2nd {
+    const typename Pair::second_type& operator()(const Pair& _value) const
+    {
+        return _value.second;
+    }
+};
 
 
 /**
