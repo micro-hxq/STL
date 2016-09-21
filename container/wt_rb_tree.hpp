@@ -742,7 +742,9 @@ public:
     }
 
     Rb_tree(const Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& other)
-    : _Base(other.get_allocator()), m_node_count_(0),
+    : Rb_tree(other, other.get_allocator()) { }
+    Rb_tree(const Rb_tree& other, const allocator_type& _alloc)
+    : _Base(_alloc), m_node_count_(0),
       m_key_comparator_(other.m_key_comparator_)
     {
         if(other._root() == nullptr)
@@ -756,7 +758,6 @@ public:
         }
         m_node_count_ = other.m_node_count_;
     }
-
     ~Rb_tree()
     {
         clear();
@@ -879,9 +880,9 @@ public:
     iterator insert_equal(const_iterator _hint, const Value& _value);
 
     template <typename InputIter>
-    void insert_unique(InputIter __first, InputIter _last);
+    void insert_unique(InputIter _first, InputIter _last);
     template <typename InputIter>
-    void insert_equal(InputIter __first, InputIter _last);
+    void insert_equal(InputIter _first, InputIter _last);
 
     void insert_unique(std::initializer_list<Value> _ilist)
     {
@@ -908,7 +909,8 @@ public:
         }
     }
 
-    void swap(Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& other)
+    void swap(Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& other) noexcept
+
     {
         wt::swap(m_header_, other.m_header_);
         wt::swap(m_key_comparator_, other.m_key_comparator_);
@@ -1594,7 +1596,7 @@ operator>=(const Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& lhs,
 template <typename Key, typename Value, typename KeyOfValue,
         typename Compare, typename Allocator>
 void swap(Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& lhs,
-          Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& rhs)
+          Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& rhs) noexcept
 {
     lhs.swap(rhs);
 }
@@ -1638,7 +1640,7 @@ Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>
 
 
 template <typename Key, typename Value, typename KeyOfValue,
-          typename Compare = wt::less<Key>,
+          typename Compare = wt::default_order_t<Key>,
           typename Allocator = wt::allocator<Value>>
 class rb_tree;
 
