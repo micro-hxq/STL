@@ -5,7 +5,7 @@
 #include "type_traits.hpp"
 #include "utility/wt_utility.hpp"
 #include "functional/wt_functional.hpp"
-
+#include "functional/wt_hash.hpp"
 
 
 #endif

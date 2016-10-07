@@ -12,8 +12,11 @@
 #include "../queue.hpp"
 #include "../array.hpp"
 #include "../forward_list.hpp"
-
-#include "../container/wt_rb_tree.hpp"
+#include "../set.hpp"
+#include "../multiset.hpp"
+#include "../map.hpp"
+#include "../multimap.hpp"
+#include "../hash_table.hpp"
 
 #include <iostream>
 

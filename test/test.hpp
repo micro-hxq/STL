@@ -21,13 +21,23 @@ void print(const Container& container, const std::string& info)
 }
 
 template <typename InputIt>
-void print(InputIt _first, InputIt _last, const std::string& info)
+void print(InputIt first, InputIt last, const std::string& info)
 {
     std::cout << "-----<" << info << " begin>-----\n";
-    for(; _first != _last; ++_first)
-        std::cout << *_first << " ";
+    for(; first != last; ++first)
+        std::cout << *first << " ";
     std::cout << "\n-----<" << info << " end>-----" << std::endl;
 }
+
+template <typename InputIt>
+void print_pair(InputIt first, InputIt last, const std::string& info)
+{
+    std::cout << "-----<" << info << " begin>-----\n";
+    for(; first != last; ++first)
+        std::cout << '[' << first->first << ", " << first->second << "] ";
+    std::cout << "\n-----<" << info << " end>-----" << std::endl;
+}
+
 template <typename T>
 bool binary_equal(const T& v1, const T& v2)
 {

@@ -1638,39 +1638,6 @@ Rb_tree<Key, Value, KeyOfValue, Compare, Allocator>
     return true;
 }
 
-
-template <typename Key, typename Value, typename KeyOfValue,
-          typename Compare = wt::default_order_t<Key>,
-          typename Allocator = wt::allocator<Value>>
-class rb_tree;
-
-
-template <typename Key, typename Value, typename KeyOfValue,
-        typename Compare, typename Allocator>
-class rb_tree : public Rb_tree<Key, Value, KeyOfValue, Compare, Allocator> {
-public:
-    typedef Rb_tree<Key, Value, KeyOfValue, Compare, Allocator> _Base;
-    typedef typename _Base::allocator_type           allocator_type;
-    typedef typename _Base::key_type                 key_type;
-    typedef typename _Base::value_type               value_type;
-    typedef typename _Base::key_comare               key_comare;
-    typedef typename _Base::pointer                  pointer;
-    typedef typename _Base::const_pointer            const_pointer;
-    typedef typename _Base::reference                reference;
-    typedef typename _Base::const_reference          const_reference;
-    typedef typename _Base::size_type                size_type;
-    typedef typename _Base::difference_type          difference_type;
-    typedef typename _Base::const_iterator           const_iterator;
-    typedef typename _Base::iterator                 iterator;
-    typedef typename _Base::const_reverse_iterator   const_reverse_iterator;
-    typedef typename _Base::reverse_iterator         reverse_iterator;
-
-    rb_tree(const Compare& _comp = Compare(), 
-            const allocator_type& _alloc = allocator_type())
-    : _Base(_comp, _alloc) { }
-    ~rb_tree() { }
-};
-
 } // namespace wt
 
 

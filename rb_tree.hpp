@@ -10,6 +10,6 @@
 #include "algorithm.hpp"
 
 #include "container/wt_rb_tree.hpp"
-
+#include "container/wt_rbt.hpp"
 
 #endif
