@@ -116,30 +116,6 @@ public:
         return *this;
     }
 
-    mapped_type& at(const key_type& _key)
-    {
-        auto iter = find(_key);
-        if(iter == m_impl_.end())
-            throw std::out_of_range("multimap");
-        return iter->second;
-    }
-    const mapped_type& at(const key_type& _key) const
-    {
-        auto iter = find(_key);
-        if(iter == m_impl_.end())
-            throw std::out_of_range("multimap");
-        return iter->second;
-    }
-
-    mapped_type& operator[](const key_type& _key)
-    {
-        auto pos = lower_bound(_key);
-        if(pos == end() || key_compare()(_key, pos->first))
-            pos = m_impl_.insert_equal(pos, value_type(_key, mapped_type()));
-        return pos->second;
-    }
-    // TODO: mapped_type& operator[](key_type&& _key)
-
     /**
      *  Iterator Operations
      */

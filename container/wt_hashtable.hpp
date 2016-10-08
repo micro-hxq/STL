@@ -542,6 +542,8 @@ public:
         return const_iterator(nullptr, this); 
     }
 
+    reference find_or_insert(const value_type& _value);
+
     size_type count(const key_type& _key) const;
 
     wt::pair<iterator, iterator>
@@ -1008,6 +1010,29 @@ hashtable<Key, Value, KeyOfValue, Hash, Equal, Allocator>
     }
     return result;
 }
+
+template <typename Key, typename Value, typename KeyOfValue,
+          typename Hash, typename Equal, typename Allocator>
+typename hashtable<Key, Value, KeyOfValue, Hash,
+                   Equal, Allocator>::reference
+hashtable<Key, Value, KeyOfValue, Hash, Equal, Allocator>
+::find_or_insert(const value_type& _value)
+{
+    resize_request(m_count_ + 1);
+    size_type bkt_idx = get_bkt_idx(_value);
+    auto first = m_buckets_[bkt_idx];
+
+    for(auto cur = first; cur; cur = cur->next_)
+        if(m_equal_(m_get_key_(cur->data_), m_get_key_(_value)))
+            return cur->data_;
+
+    auto temp = _create_node(_value);
+    temp->next_ = first;
+    m_buckets_[bkt_idx] = temp;
+    ++m_count_;
+    return temp->data_;
+}
+
 
 template <typename Key, typename Value, typename KeyOfValue,
           typename Hash, typename Equal, typename Allocator>
