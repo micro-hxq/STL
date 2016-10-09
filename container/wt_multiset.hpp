@@ -15,9 +15,9 @@ public:
     typedef typename _Impl_type::size_type              size_type;
     typedef typename _Impl_type::difference_type        difference_type;
     typedef typename _Impl_type::allocator_type         allocator_type;
-    typedef typename _Impl_type::const_reference        reference;
+    typedef typename _Impl_type::reference              reference;
     typedef typename _Impl_type::const_reference        const_reference;
-    typedef typename _Impl_type::const_pointer          pointer;
+    typedef typename _Impl_type::pointer                pointer;
     typedef typename _Impl_type::const_pointer          const_pointer;
     typedef typename _Impl_type::const_iterator         iterator;
     typedef typename _Impl_type::const_iterator         const_iterator;

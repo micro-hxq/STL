@@ -25,7 +25,7 @@ public:
     typedef typename _Impl_type::const_reference        const_reference;
     typedef typename _Impl_type::pointer                pointer;
     typedef typename _Impl_type::const_pointer          const_pointer;
-    typedef typename _Impl_type::iterator               iterator;
+    typedef typename _Impl_type::const_iterator         iterator;
     typedef typename _Impl_type::const_iterator         const_iterator;
     typedef typename _Impl_type::local_iterator         local_iterator;
     typedef typename _Impl_type::const_local_iterator   const_local_iterator;
