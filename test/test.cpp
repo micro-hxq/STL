@@ -17,6 +17,10 @@
 #include "../map.hpp"
 #include "../multimap.hpp"
 #include "../hash_table.hpp"
+#include "../unordered_set.hpp"
+#include "../unordered_map.hpp"
+#include "../unordered_multiset.hpp"
+#include "../unordered_multimap.hpp"
 
 #include <iostream>
 

@@ -1,28 +1,7 @@
-#define CATCH_CONFIG_MAIN
-
+#include "test.hpp"
 #include "../string.hpp"
-#include "catch.hpp"
 
-
-template <typename InputIt>
-void print(InputIt _first, InputIt _last)
-{
-    int count = 0;
-    for(;_first != _last; ++_first)
-    {
-        ++count;
-        std::cout << *_first ;
-    }
-    std::cout << "\n size: " << count << std::endl;
-}
-
-void separate(const wt::string& info)
-{
-    std::cout << "-----";
-    for(auto it = info.cbegin(); it != info.cend(); ++it)
-        std::cout << *it ;
-    std::cout << "-----" << std::endl;
-}
+using namespace test;
 
 TEST_CASE("string","[string]") {
     SECTION("char_traits") {
@@ -63,27 +42,25 @@ TEST_CASE("string","[string]") {
     SECTION("insert") {
         wt::string s1("hello");
         s1.insert(1, 5, 'a');
-        print(s1.begin(), s1.end());
+        print(s1.begin(), s1.end(), "s1");
         s1.insert(s1.cend() - 1, 'b');
-        print(s1.begin(), s1.end());
+        print(s1.begin(), s1.end(), "s1");
         const char* cstr = "fuck";
         s1.insert(0, cstr);
-        print(s1.begin(), s1.end());
+        print(s1.begin(), s1.end(), "s1");
     }
 
     SECTION("swap") {
-        separate("swap start");
         wt::string s1("hello");
         wt::string s2("wt");
-        print(s1.begin(), s1.end());
-        print(s2.begin(), s2.end());
+        print(s1.begin(), s1.end(), "s1");
+        print(s2.begin(), s2.end(), "s2");
         s1.swap(s2);
-        print(s1.begin(), s1.end());
-        print(s2.begin(), s2.end());
+        print(s1.begin(), s1.end(), "s1");
+        print(s2.begin(), s2.end(), "s2");
         s2.swap(s1);
-        print(s1.begin(), s1.end());
-        print(s2.begin(), s2.end());
-        separate("swap finish");
+        print(s1.begin(), s1.end(), "s1");
+        print(s2.begin(), s2.end(), "s2");
     }
 
     SECTION("rfind") {

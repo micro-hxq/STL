@@ -2,7 +2,7 @@
 #include "catch.hpp"
 #include <iostream>
 #include <string>
-#include "type_traits.hpp"
+#include "../type_traits.hpp"
 // #include <type_traits>
 
 

@@ -1,10 +1,6 @@
 #ifndef _STL_WT_ALGO_BASE_HPP_
 #define _STL_WT_ALGO_BASE_HPP_ 
 
-// depend on:
-//          "../iterator/wt_iterator_base.hpp"
-//          "string.h"
-//          "../utility/wt_pair.hpp"
 namespace wt{
 
 
@@ -54,7 +50,7 @@ constexpr const T& max(const T& _a, const T& _b, Compare _comparetor)
 /////////////////////
 template <typename InputIterator, typename OutputIterator, typename Distance>
 inline OutputIterator _copy(InputIterator _first, InputIterator _last,
-                            OutputIterator _dest, input_iterator_tag,
+                            OutputIterator _dest, wt::input_iterator_tag,
                             Distance* )
 {
     for(; _first != _last; ++_first, ++_dest)
@@ -69,7 +65,7 @@ template <typename RandomAccessIterator, typename OutputIterator,
 inline OutputIterator _copy(RandomAccessIterator _first, 
                             RandomAccessIterator _last,
                             OutputIterator _dest,
-                            random_access_iterator_tag,
+                            wt::random_access_iterator_tag,
                             Distance* )
 {
     for(Distance left = _last - _first; left > 0; --left)
@@ -90,7 +86,7 @@ inline T* _copy_trivial(const T* _first, const T* _last, T* _dest)
 
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator _copy_aux2(InputIterator _first, InputIterator _last,
-                                 OutputIterator _dest, true_type )
+                                 OutputIterator _dest, wt::true_type )
 {
     return wt::_copy(_first, _last, _dest,
                      _ITERATOR_CATEGORY(_first),
@@ -99,7 +95,7 @@ inline OutputIterator _copy_aux2(InputIterator _first, InputIterator _last,
 
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator _copy_aux2(InputIterator _first, InputIterator _last,
-                                 OutputIterator _dest, false_type )
+                                 OutputIterator _dest, wt::false_type )
 {
     return wt::_copy(_first, _last, _dest,
                      _ITERATOR_CATEGORY(_first),
@@ -107,9 +103,10 @@ inline OutputIterator _copy_aux2(InputIterator _first, InputIterator _last,
 }
 
 template <typename T>
-inline T* _copy_aux2(const T* _first, const T* _last, T* _dest, true_type)
+inline T* _copy_aux2(const T* _first, const T* _last, T* _dest, wt::true_type)
 {
-    return wt::_copy_trivial(_first, _last, _dest);
+      memmove(_dest, _first, sizeof(T) * (_last - _first));
+      return _dest + (_last - _first);
 }
 
 // distinguish between iterator and pointer
@@ -136,7 +133,7 @@ template <typename BidirectionalIterator1, typename BidirectionalIterator2,
 inline BidirectionalIterator2 _copy_backward(BidirectionalIterator1 _first,
                                              BidirectionalIterator1 _last,
                                              BidirectionalIterator2 _dest,
-                                             bidirectional_iterator_tag,
+                                             wt::bidirectional_iterator_tag,
                                              Distance*)
 {
     while(_first != _last)
@@ -151,7 +148,7 @@ template <typename RandomAccessIterator, typename BidirectionalIterator,
 inline BidirectionalIterator _copy_backward(RandomAccessIterator _first,
                                             RandomAccessIterator _last,
                                             BidirectionalIterator _dest,
-                                            RandomAccessIterator,
+                                            wt::random_access_iterator_tag,
                                             Distance* )
 {
     for(Distance left = _last - _first; left > 0; --left)
@@ -283,53 +280,6 @@ inline char* fill_n(char* _first, Size _count, const char& _c)
     wt::fill(_first, _first + _count, _c);
     return _first + _count;
 }
-
-// //////////////
-// // mismatch //
-// //////////////
-// template <typename InputIterator1, typename InputIterator2>
-// pair<InputIterator1, InputIterator2>
-// mismatch(InputIterator1 _first1, InputIterator1 _last1, InputIterator2 _first2)
-// {
-//     for(; _first1 != _last1 && *_first1 == *_first2; ++_first1, ++_first2);
-//     return pair<InputIterator1, InputIterator2>(_first1, _first2);    
-// }
-
-// template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
-// pair<InputIterator1, InputIterator2>
-// mismatch(InputIterator1 _first1, InputIterator1 _last1,
-//          InputIterator2 _first2, BinaryPredicate pred)
-// {
-//     for(; _first1 != _last1 && pred(*_first1, *_first2); ++_first1, ++_first2);
-//     return pair<InputIterator1, InputIterator2>(_first1, _first2);
-// }
-
-// template <typename InputIterator1, typename InputIterator2>
-// pair<InputIterator1, InputIterator2>
-// mismatch(InputIterator1 _first1, InputIterator1 _last1,
-//          InputIterator2 _first2, InputIterator2 _last2)
-// {
-//     while(_first1 != _last1 && _first2 != _last2 && *_first1 == *_first2)
-//     {
-//         ++_first1;
-//         ++_first2;
-//     }
-//     return pair<InputIterator1, InputIterator2>(_first1, _first2);
-// }
-
-// template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
-// pair<InputIterator1, InputIterator2>
-// mismatch(InputIterator1 _first1, InputIterator1 _last1,
-//          InputIterator2 _first2, InputIterator2 _last2,
-//          BinaryPredicate pred)
-// {
-//     while(_first1 != _last1 && _first2 != _last2 && pred(*_first1, *_first2))
-//     {
-//         ++_first1;
-//         ++_first2;
-//     }
-//     return pair<InputIterator1, InputIterator2>(_first1, _first2);
-// }
 
 ///////////
 // equal //

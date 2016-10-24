@@ -1,15 +1,6 @@
 #ifndef _STL_WT_UNINITIALIZED_HPP_
 #define _STL_WT_UNINITIALIZED_HPP_
 
-/**
- *  depend on:
- *            "type_traits.hpp"
- *            "../algorithm/wt_algo_base.hpp"
- *            "../iterator/wt_iterator_base.hpp"
- *            "../utility/wt_pair.hpp"
- *            
- */
-
 namespace wt{
 
 ////////////////////////

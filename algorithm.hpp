@@ -10,8 +10,6 @@
 #include "iterator.hpp"
 #include "allocator.hpp"
 
-
-
 #include "algorithm/wt_algo_base.hpp"
 #include "algorithm/wt_uninitialized.hpp"
 #include "algorithm/wt_heap.hpp"
