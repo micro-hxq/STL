@@ -4,6 +4,16 @@
 #include "../list.hpp"
 #include "../functional.hpp"
 
+template <typename T>
+void TEST_FILL(T val1, T val2)
+{
+    wt::vector<T> v1(10000);
+    wt::fill(&v1[0], &v1[9999], val1);
+    CHECK(wt::all_of(&v1[0], &v1[9999], [val1](T elem) { return elem == val1; }));
+    CHECK((wt::fill_n(&v1[0], v1.size(), val2) == (&v1[9999] + 1)));
+    CHECK(wt::all_of(&v1[0], &v1[9999], [val2](T elem) { return elem == val2; }));
+}
+
 TEST_CASE("algorithm","[algo_base]"){
     SECTION("swap"){
         bool b1 = false, b2 = true;
@@ -42,7 +52,7 @@ TEST_CASE("algorithm","[algo_base]"){
 
     }
 
-    SECTION("copy equal copy_n"){
+    SECTION("copy equal copy_n copy_backwward"){
         wt::vector<int> r1;
         wt::list<int> r2;
         int r3[1000];
@@ -63,6 +73,7 @@ TEST_CASE("algorithm","[algo_base]"){
         CHECK((p1.first == r1.cend() && p1.second == v1.end()));
         CHECK(wt::equal(v1.begin(), v1.end(), r1.begin()));
         CHECK(wt::equal(v1.cbegin(), v1.cend(), r1.cbegin(), wt::equal_to<void>()));
+
         
         CHECK(wt::equal(r1.begin(), r1.end(), r1.begin(), r1.end()));
         CHECK(wt::equal(r1.begin(), r1.end(), r1.begin(), r1.end(), wt::equal_to<void>()));
@@ -78,5 +89,39 @@ TEST_CASE("algorithm","[algo_base]"){
         CHECK(wt::copy(r3, r3 + 1000, v1.begin()) == v1.end());
         CHECK(wt::equal(v1.begin(), v1.end(), r3));
         CHECK(wt::equal(v1.cbegin(), v1.cend(), r3, wt::equal_to<void>()));
+
+        wt::vector<int> r4(1000);
+        CHECK(wt::copy_backward(r1.begin(), r1.end(), r4.end()) == r4.begin());
+        CHECK(wt::equal(r1.begin() ,r1.end(), r4.begin(), r4.end()));
+        CHECK(wt::copy_backward(r2.begin(), r2.end(), r4.end()) == r4.begin());
+        CHECK(wt::equal(r2.begin(), r2.end(), r4.begin(), r4.end()));
+    }
+
+    SECTION("fill fill_n"){
+
+        TEST_FILL<int>(6, 9);
+        TEST_FILL<char>('z', 'q');
+        TEST_FILL<unsigned char>('x', 'y');
+        TEST_FILL<signed char>('A', 'B');
+    }
+
+    SECTION("lexicographical_compare lexicographical_compare_3way") {
+        wt::vector<int> v1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        wt::vector<int> v2{1, 2, 3, 4, 5, 6, 6, 8, 9, 10};
+        wt::vector<int> v3{1 ,2 ,3, 5, 4, 2, 1, 2, 4, 1};
+
+        CHECK_FALSE(wt::lexicographical_compare(v1.begin() ,v1.end(), v1.begin(), v1.end()));
+        CHECK_FALSE(wt::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end()));
+        CHECK(wt::lexicographical_compare(v1.begin(), v1.end(), v3.begin(), v3.end()));
+        CHECK_FALSE(wt::lexicographical_compare(v1.begin() ,v1.end(), v1.begin(), v1.end(), wt::less<void>()));
+        CHECK_FALSE(wt::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end(), wt::less<void>()));
+        CHECK(wt::lexicographical_compare(v1.begin(), v1.end(), v3.begin(), v3.end(), wt::less<void>()));
+        
+        CHECK(wt::lexicographical_compare_3way(v1.begin() ,v1.end(), v1.begin(), v1.end()) == 0);
+        CHECK(wt::lexicographical_compare_3way(v1.begin(), v1.end(), v2.begin(), v2.end()) == 1);
+        CHECK(wt::lexicographical_compare_3way(v1.begin(), v1.end(), v3.begin(), v3.end()) == -1);
+        CHECK(wt::lexicographical_compare_3way(v1.begin() ,v1.end(), v1.begin(), v1.end(), wt::less<void>()) == 0);
+        CHECK(wt::lexicographical_compare_3way(v1.begin(), v1.end(), v2.begin(), v2.end(), wt::less<void>()) == 1);
+        CHECK(wt::lexicographical_compare_3way(v1.begin(), v1.end(), v3.begin(), v3.end(), wt::less<void>()) == -1);
     }
 }

@@ -15,7 +15,7 @@ void is_same(const Container1& c1, Container2)
     sink_warn(c2);
 }
 
-
+class Foo{};
 int main(int argc, char const *argv[])
 {
     
@@ -28,12 +28,11 @@ int main(int argc, char const *argv[])
 
     for(auto elem : my_vec)
         std::cout << elem << ' ';
-    // my_vec.reserve(100000004);
+
     for(int i=0;i<1000000;++i)
         my_vec.push_back(i);
 
     std::cout << "\nsize : " << my_vec.size() << std::endl;
-
-    std::cout << "allocator : " << (my_vec.get_allocator() == my_double.get_allocator()) << std::endl;
-
+    std::cout << "allocator : " << std::boolalpha
+              << (my_vec.get_allocator() == my_double.get_allocator()) << std::endl;
 }

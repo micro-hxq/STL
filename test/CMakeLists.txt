@@ -1,8 +1,8 @@
-#add_executable(test test.cpp)
+add_executable(test_all test.cpp)
 
 add_executable(algo_base_test algo_base_test.cpp)
 
-#add_executable(allocator_test allocator_test.cpp)
+add_executable(allocator_test allocator_test.cpp)
 
 add_executable(algorithm_test algorithm_test.cpp)
 

@@ -3,7 +3,6 @@
 
 namespace wt{
 
-
 template <typename T>
 void swap(T& _a, T& _b)
 {
@@ -239,28 +238,25 @@ OutputIterator fill_n(OutputIterator _first, Size _count, const T& _value)
  *  one byte optimization
  */
 inline void fill(unsigned char* _first, unsigned char* _last, 
-                 const unsigned char& _c)
+                 unsigned char _c)
 {
-    unsigned char temp = _c;
-    memset(_first, temp, _last - _first);
+    memset(_first, _c, _last - _first);
 }
 
 inline void fill(signed char* _first, signed char* _last,
-                 const signed char& _c)
+                 signed char _c)
 {
-    signed char temp = _c;
-    memset(_first, static_cast<unsigned char>(temp), _last - _first);
+    memset(_first, static_cast<unsigned char>(_c), _last - _first);
 }
 
-inline void fill(char* _first, char* _last, const char& _c)
+inline void fill(char* _first, char* _last, char _c)
 {
-    char temp = _c;
-    memset(_first, static_cast<unsigned char>(temp), _last - _first);
+    memset(_first, static_cast<unsigned char>(_c), _last - _first);
 }
 
 template <typename Size>
 inline unsigned char* fill_n(unsigned char* _first, Size _count,
-                             const unsigned char& _c)
+                             unsigned char _c)
 {
     wt::fill(_first, _first + _count, _c);
     return _first + _count;
@@ -268,14 +264,14 @@ inline unsigned char* fill_n(unsigned char* _first, Size _count,
 
 template <typename Size>
 inline signed char* fill_n(signed char* _first, Size _count,
-                         const signed char& _c)
+                           signed char _c)
 {
     wt::fill(_first, _first + _count, _c);
     return _first + _count;
 }
 
 template <typename Size>
-inline char* fill_n(char* _first, Size _count, const char& _c)
+inline char* fill_n(char* _first, Size _count, char _c)
 {
     wt::fill(_first, _first + _count, _c);
     return _first + _count;
@@ -428,7 +424,7 @@ template <typename InputIterator1, typename InputIterator2>
 int lexicographical_compare_3way(InputIterator1 _first1, InputIterator1 _last1,
                                  InputIterator2 _first2, InputIterator2 _last2)
 {
-    while(_first1 != _last1 && _first2 != _last2)
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
     {
         if(*_first1 < *_first2)
             return -1;
@@ -437,7 +433,7 @@ int lexicographical_compare_3way(InputIterator1 _first1, InputIterator1 _last1,
     }
     if(_first1 != _last1)
         return 1;
-    return !(_first2 == _last2);
+    return _first2 != _last2;
 }                                 
 
 template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
@@ -445,7 +441,7 @@ int lexicographical_compare_3way(InputIterator1 _first1, InputIterator1 _last1,
                                  InputIterator2 _first2, InputIterator2 _last2,
                                  BinaryPredicate pred)
 {
-    while(_first1 != _last1 && _first2 != _last2)
+    for(; _first1 != _last1 && _first2 != _last2; ++_first1, ++_first2)
     {
         if(pred(*_first1, *_first2))
             return -1;
@@ -454,7 +450,7 @@ int lexicographical_compare_3way(InputIterator1 _first1, InputIterator1 _last1,
     }
     if(_first1 != _last1)
         return 1;
-    return !(_first2 == _last2);
+    return _first2 != _last2;
 }
 
 } // namespace wt

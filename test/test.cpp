@@ -27,5 +27,6 @@
 
 int main(int argc, char const *argv[])
 {
+    std::cout << "everything is all right" << std::endl;
     return 0;
 }
