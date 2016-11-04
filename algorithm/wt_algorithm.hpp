@@ -212,7 +212,7 @@ InputIterator find_first_of(InputIterator _first, InputIterator _last,
 {
     for(; _first != _last; ++_first)
     {
-        for(auto iter = _s_first; iter != _s_first; ++iter)
+        for(auto iter = _s_first; iter != _s_last; ++iter)
         {
             if(*_first == *iter)
                 return _first;
@@ -562,7 +562,7 @@ OutputIterator
 transform(InputIterator1 _first1, InputIterator1 _last1, InputIterator2 _first2,
           OutputIterator _dest, BinaryPredicate _pred)
 {
-    for(; _first1 != _last1; ++_first1)
+    for(; _first1 != _last1; ++_first1, ++ _first2)
     {
         *_dest++ = _pred(*_first1, *_first2);
     }
@@ -672,7 +672,7 @@ replace_copy(InputIterator _first, InputIterator _last, OutputIterator _dest,
              const T& _old, const T& _new)
 {
     for(; _first != _last; ++_first)
-        *_dest++ = (*_first == _old) ? _new : _old;
+        *_dest++ = (*_first == _old) ? _new : *_first;
     return _dest;
 }
 
