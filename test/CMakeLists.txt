@@ -55,3 +55,7 @@ add_executable(unordered_map_test unordered_map_test.cpp)
 add_executable(unordered_multimap_test unordered_multimap_test.cpp)
 
 add_executable(vector_test vector_test.cpp)
+
+add_executable(union_find_test union_find_test.cpp)
+
+add_executable(toys_test toys_test.cpp)

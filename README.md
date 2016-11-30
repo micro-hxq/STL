@@ -40,14 +40,22 @@ This is simple c++ stl based on sgi-stl, but adds some new c++11 functions. The 
 * `advance`
 * `next`
 * `prev`
-* `back_insert_iterator` and `back_inserter`
-* `front_insert_iterator` and `front_inserter`
-* `insert_iterator` and `inserter`
-* `reverse_iterator` and `make_reverse_iterator`
-* `begin` and `end`
-* `cbegin` and `cend`
-* `rbegin` and `rend`
-* `crbegin` and `crend`  
+* `back_insert_iterator` 
+* `back_inserter`
+* `front_insert_iterator`
+* `front_inserter`
+* `insert_iterator`
+* `inserter`
+* `reverse_iterator`
+* `make_reverse_iterator`
+* `begin`
+* `end`
+* `cbegin`
+* `cend`
+* `rbegin`
+* `rend`
+* `crbegin`
+* `crend`  
 
 ## 5. functional
 
@@ -177,6 +185,13 @@ This is simple c++ stl based on sgi-stl, but adds some new c++11 functions. The 
 * `stack`
 * `queue`
 * `priority_queue`
+
+## 10. toys
+
+* `union_find`
+* `selection_sort`
+* `insertion_sort`
+* `shell_sort`
 
 ---
 
