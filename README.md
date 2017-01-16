@@ -192,6 +192,8 @@ This is simple c++ stl based on sgi-stl, but adds some new c++11 functions. The 
 * `selection_sort`
 * `insertion_sort`
 * `shell_sort`
+* `quick_sort`
+* `heap_sort`
 
 ---
 
