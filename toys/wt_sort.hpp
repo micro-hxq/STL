@@ -90,7 +90,7 @@ template <typename RandomIter,  typename Compare = wt::default_order_t<void>>
 void
 quick_sort(RandomIter first, RandomIter last, Compare comp = Compare())
 {
-    if(last - first > 0)
+    if(last - first > 1)
     {
         RandomIter pivot = wt::detail::partition(first, last, comp);
         quick_sort(first, pivot, comp);
@@ -167,6 +167,21 @@ heap_sort(RandomIter first, RandomIter last, Comp comp = Comp())
     }
 }
 
+
+template <typename RandomIter, typename Comp = wt::default_order_t<void>>
+void
+nth_element(RandomIter first, RandomIter nth, RandomIter last, Comp comp = Comp())
+{
+    if(last - first <= 1)
+        return;
+    auto pivot = detail::partition(first, last, comp);
+    if(pivot == nth)
+        return;
+    if(pivot - nth > 0)
+        nth_element(first, nth, pivot, comp);
+    else
+        nth_element(pivot, nth, last, comp);
+}
 
 
 
