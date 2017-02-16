@@ -158,6 +158,7 @@ This is simple c++ stl based on sgi-stl, but adds some new c++11 functions. The 
 * `is_permutation`
 * `next_permutation`
 * `prev_permutation`
+* `nth_element`
 
 ## 7. string
 
@@ -179,6 +180,8 @@ This is simple c++ stl based on sgi-stl, but adds some new c++11 functions. The 
 * `unordered_multiset`
 * `unordered_map`
 * `unordered_multimap`
+* `binary_search_tree`
+* `avl_tree`
 
 ## 9. adaptor
 

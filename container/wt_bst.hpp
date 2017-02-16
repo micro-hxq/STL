@@ -209,8 +209,14 @@ public:
     typedef wt::reverse_iterator<const_iterator>    const_reverse_iterator;
     typedef wt::reverse_iterator<iterator>          reverse_iterator;
 
+    allocator_type get_allocator() const
+    {
+        return alloc_;
+    }
     binary_search_tree()
-    : root_(nullptr) { }
+    : alloc_(allocator_type()), root_(nullptr) { }
+    binary_search_tree(const allocator_type& alloc)
+    : alloc_(alloc), root_(nullptr) { }
 
     binary_search_tree(const binary_search_tree& ) = delete;
     binary_search_tree(binary_search_tree&& ) = delete;

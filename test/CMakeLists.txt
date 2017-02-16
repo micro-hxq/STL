@@ -61,3 +61,5 @@ add_executable(union_find_test union_find_test.cpp)
 add_executable(toys_test toys_test.cpp)
 
 add_executable(bst_test bst_test.cpp)
+
+add_executable(avl_tree_test avl_tree_test.cpp)
